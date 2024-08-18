@@ -13,6 +13,7 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
+import { NavLink } from "react-router-dom";
 
  
 const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
@@ -79,9 +80,12 @@ function UsersTable() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
-              <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
-            </Button>
+            <NavLink to="/dashboard/users/add">
+              <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
+                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
+              </Button>
+            </NavLink>
+
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
