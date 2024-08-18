@@ -17,13 +17,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
     <div
       className={`fixed inset-y-0 left-0 z-30 transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } overflow-y-auto bg-gray-800 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 w-64`}
+      } overflow-y-auto bg-[#1F2937] text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 w-64`}
     >
+      {/* Sidebar Header */}
       <div className="flex items-center justify-between p-4 lg:hidden">
         <h2 className="text-2xl font-bold">Dashboard</h2>
         <button
           onClick={toggleSidebar}
           className="focus:outline-none text-white"
+          aria-label="Close sidebar"
         >
           <svg
             className="w-6 h-6"
@@ -42,13 +44,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         </button>
       </div>
 
+      {/* Sidebar Content */}
       <div className="flex flex-col p-4 space-y-4">
+        {/* Dashboard Link */}
         <NavLink
           to="/dashboard"
           end
           className={({ isActive }) =>
-            `flex items-center p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white ${
-              isActive ? 'bg-gray-700 text-white' : ''
+            `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${
+              isActive ? 'bg-[#256caa] text-white' : ''
             }`
           }
         >
@@ -60,7 +64,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <div>
           <button
             onClick={() => toggleSection('users')}
-            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white"
+            aria-expanded={activeSection === 'users'}
+            aria-controls="users-menu"
+            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white"
           >
             <div className="flex items-center space-x-3">
               <i className="fa-solid fa-users"></i>
@@ -73,26 +79,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
             ></i>
           </button>
           {activeSection === 'users' && (
-            <div className="ml-6 space-y-2">
+            <div id="users-menu" className="ml-6 space-y-2">
+              <NavLink
+                to="/dashboard/users"
+                end
+                className={({ isActive }) =>
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
+                  }`
+                }
+              >
+                All Users
+              </NavLink>
               <NavLink
                 to="/dashboard/users/add"
+                end
                 className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
                   }`
                 }
               >
                 Add User
-              </NavLink>
-              <NavLink
-                to="/dashboard/users/retrieve"
-                className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
-                  }`
-                }
-              >
-                Retrieve Users
               </NavLink>
             </div>
           )}
@@ -102,11 +110,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <div>
           <button
             onClick={() => toggleSection('category')}
-            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white"
+            aria-expanded={activeSection === 'category'}
+            aria-controls="category-menu"
+            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white"
           >
             <div className="flex items-center space-x-3">
               <i className="fa-solid fa-layer-group"></i>
-              <span>Category </span>
+              <span>Category</span>
             </div>
             <i
               className={`fas fa-chevron-down transform transition-transform ${
@@ -115,26 +125,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
             ></i>
           </button>
           {activeSection === 'category' && (
-            <div className="ml-6 space-y-2">
+            <div id="category-menu" className="ml-6 space-y-2">
+              <NavLink
+                to="/dashboard/categories"
+                end
+                className={({ isActive }) =>
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
+                  }`
+                }
+              >
+                All Categories
+              </NavLink>
               <NavLink
                 to="/dashboard/categories/add"
+                end
                 className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
                   }`
                 }
               >
                 Add Category
-              </NavLink>
-              <NavLink
-                to="/dashboard/categories/retrieve"
-                className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
-                  }`
-                }
-              >
-                Retrieve Categories
               </NavLink>
             </div>
           )}
@@ -144,7 +156,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <div>
           <button
             onClick={() => toggleSection('event')}
-            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white"
+            aria-expanded={activeSection === 'event'}
+            aria-controls="event-menu"
+            className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white"
           >
             <div className="flex items-center space-x-3">
               <i className="fa-regular fa-calendar-days"></i>
@@ -157,26 +171,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
             ></i>
           </button>
           {activeSection === 'event' && (
-            <div className="ml-6 space-y-2">
+            <div id="event-menu" className="ml-6 space-y-2">
+              <NavLink
+                to="/dashboard/events"
+                end
+                className={({ isActive }) =>
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
+                  }`
+                }
+              >
+                All Events
+              </NavLink>
               <NavLink
                 to="/dashboard/events/add"
+                end
                 className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
+                  `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
+                    isActive ? 'bg-[#256caa] text-white' : ''
                   }`
                 }
               >
                 Add Event
-              </NavLink>
-              <NavLink
-                to="/dashboard/events/retrieve"
-                className={({ isActive }) =>
-                  `block p-2 rounded-md hover:bg-gray-700 hover:text-white ${
-                    isActive ? 'bg-gray-700 text-white' : ''
-                  }`
-                }
-              >
-                Retrieve Events
               </NavLink>
             </div>
           )}
@@ -186,8 +202,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <NavLink
           to="/dashboard/bookings"
           className={({ isActive }) =>
-            `flex items-center p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white ${
-              isActive ? 'bg-gray-700 text-white' : ''
+            `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${
+              isActive ? 'bg-[#256caa] text-white' : ''
             }`
           }
         >
@@ -196,9 +212,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         </NavLink>
         <NavLink
           to="/dashboard/feedback"
+          end
           className={({ isActive }) =>
-            `flex items-center p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white ${
-              isActive ? 'bg-gray-700 text-white' : ''
+            `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${
+              isActive ? 'bg-[#256caa] text-white' : ''
             }`
           }
         >
@@ -207,9 +224,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         </NavLink>
         <NavLink
           to="/dashboard/settings"
+          end
           className={({ isActive }) =>
-            `flex items-center p-2 space-x-3 rounded-md hover:bg-gray-700 hover:text-white ${
-              isActive ? 'bg-gray-700 text-white' : ''
+            `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${
+              isActive ? 'bg-[#256caa] text-white' : ''
             }`
           }
         >
