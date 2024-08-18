@@ -1,7 +1,7 @@
  
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from '../layout/Dashboard';
-
+import AllUsers from '../pages/Dashboard/User/AllUsers';
  
 const AppRouter = () => {
   return (
@@ -11,7 +11,7 @@ const AppRouter = () => {
                <Route path="dashboard" element={<Dashboard/>}>
                     
                         <Route path="users/add" element={<h1>User dam dam</h1>}/>
-                        <Route path="users/" element={<h1>All users</h1>}/>
+                        <Route path="users/" element={<AllUsers/>}/>
                         <Route path="bookings" element={<h1>bookings</h1>}/>
                         <Route path="feedback" element={<h1>All feedback</h1>}/>
                         <Route path="settings" element={<h1>All feedback</h1>}/>

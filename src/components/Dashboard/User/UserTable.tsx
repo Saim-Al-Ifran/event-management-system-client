@@ -9,29 +9,12 @@ import {
   CardBody,
   Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Avatar,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
 
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Monitored",
-    value: "monitored",
-  },
-  {
-    label: "Unmonitored",
-    value: "unmonitored",
-  },
-];
-
+ 
 const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
 
 const TABLE_ROWS = [
@@ -84,37 +67,26 @@ const TABLE_ROWS = [
 
 function UsersTable() {
   return (
-    <Card className="h-full w-full" {...(undefined as any)}>
+    <Card {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray" {...(undefined as any)}>
-              Members list
+              Users list
             </Typography>
             <Typography color="gray" className="mt-1 font-normal" {...(undefined as any)}>
-              See information about all members
+              See information about all users
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button variant="outlined" size="sm" {...(undefined as any)}>
-              view all
-            </Button>
             <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
               <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
             </Button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <Tabs value="all" className="w-full md:w-max">
-            <TabsHeader {...(undefined as any)}>
-              {TABS.map(({ label, value }) => (
-                <Tab key={value} value={value} {...(undefined as any)}>
-                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs>
-          <div className="w-full md:w-72">
+        <div className="flex-1" />
+          <div className="w-full md:w-72  ">
             <Input
               label="Search"
               icon={<MagnifyingGlassIcon  className="h-5 w-5" />}

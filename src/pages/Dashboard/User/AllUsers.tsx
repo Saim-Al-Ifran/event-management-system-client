@@ -4,6 +4,7 @@ const AllUsers = () => {
   return (
     <>
       <UsersTable/>
+       
     </>
   )
 }
