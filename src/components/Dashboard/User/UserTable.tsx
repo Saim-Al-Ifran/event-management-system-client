@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -11,11 +11,9 @@ import {
   CardFooter,
   Tabs,
   Avatar,
-  IconButton,
   Tooltip,
 } from "@material-tailwind/react";
 import "../../../style/responsive.userTable.css"; // Import your custom CSS
-
 
 const TABLE_HEAD = ["Member", "Function", "Status", "Employed", "Actions"];
 
@@ -196,9 +194,24 @@ function UsersTable() {
                       </td>
                       <td className={classes}>
                         <Tooltip content="Edit User">
-                          <IconButton variant="text" color="blue-gray" {...(undefined as any)}>
-                            <PencilIcon className="h-4 w-4" />
-                          </IconButton>
+                            <Button 
+                              color="blue-gray"
+                              variant="filled"
+                              {...(undefined as any)}
+                              size="md"
+                              className="mr-2"
+                            >
+                               <i className="fa-solid fa-pen-to-square"></i>
+                            </Button>
+                        </Tooltip>
+                        <Tooltip content="Delete User">
+                            <Button 
+                              color="red"
+                              {...(undefined as any)}
+                              size="md"
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </Button>
                         </Tooltip>
                       </td>
                     </tr>
