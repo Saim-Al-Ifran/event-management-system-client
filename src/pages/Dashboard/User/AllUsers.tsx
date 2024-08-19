@@ -3,8 +3,7 @@ import UsersTable from "../../../components/Dashboard/User/UserTable"
 const AllUsers = () => {
   return (
     <>
-      <UsersTable/>
-       
+      <UsersTable />
     </>
   )
 }

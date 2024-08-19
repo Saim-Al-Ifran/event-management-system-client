@@ -12,7 +12,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex-1 flex flex-col ">
         <TopNavBar toggleSidebar={toggleSidebar} />

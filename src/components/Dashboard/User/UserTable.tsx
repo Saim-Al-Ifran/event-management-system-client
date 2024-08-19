@@ -9,14 +9,15 @@ import {
   CardBody,
   Chip,
   CardFooter,
+  Tabs,
   Avatar,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import { NavLink } from "react-router-dom";
+import "../../../style/responsive.userTable.css"; // Import your custom CSS
 
- 
-const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
+
+const TABLE_HEAD = ["Member", "Function", "Status", "Employed", "Actions"];
 
 const TABLE_ROWS = [
   {
@@ -68,11 +69,11 @@ const TABLE_ROWS = [
 
 function UsersTable() {
   return (
-    <Card {...(undefined as any)}>
+    <Card className="users-table-card" {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
-            <Typography variant="h5" color="blue-gray" {...(undefined as any)}>
+            <Typography variant="h5" color="blue-gray"{...(undefined as any)}>
               Users list
             </Typography>
             <Typography color="gray" className="mt-1 font-normal" {...(undefined as any)}>
@@ -80,132 +81,135 @@ function UsersTable() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <NavLink to="/dashboard/users/add">
-              <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
-              </Button>
-            </NavLink>
-
+   
+            <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
+              <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
+            </Button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-        <div className="flex-1" />
-          <div className="w-full md:w-72  ">
+          <Tabs value="all" className="w-full md:w-max">
+   
+          </Tabs>
+          <div className="w-full md:w-72 mb-4">
             <Input
               label="Search"
-              icon={<MagnifyingGlassIcon  className="h-5 w-5" />}
+              icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
               {...(undefined as any)}
             />
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll px-0" {...(undefined as any)}>
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                    {...(undefined as any)}
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TABLE_ROWS.map(
-              ({ img, name, email, job, org, online, date }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
 
-                return (
-                  <tr key={name}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar src={img} alt={name} size="sm" {...(undefined as any)}/>
+      <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
+        <div className="table-container">
+          <table className="users-table w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                {TABLE_HEAD.map((head) => (
+                  <th
+                    key={head}
+                    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                  >
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal leading-none opacity-70"
+                      {...(undefined as any)}
+                    >
+                      {head}
+                    </Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TABLE_ROWS.map(
+                ({ img, name, email, job, org, online, date }, index) => {
+                  const isLast = index === TABLE_ROWS.length - 1;
+                  const classes = isLast
+                    ? "p-4"
+                    : "p-4 border-b border-blue-gray-50";
+
+                  return (
+                    <tr key={name}>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Avatar src={img} alt={name} size="sm"  {...(undefined as any)}/>
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              {...(undefined as any)}
+                            >
+                              {name}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="gray"
+                              className="font-normal opacity-70"
+                              {...(undefined as any)}
+                            >
+                              {email}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={classes}>
                         <div className="flex flex-col">
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-normal" {...(undefined as any)}
-                             >
-                            {name}
+                            className="font-normal"
+                            {...(undefined as any)}
+                          >
+                            {job}
                           </Typography>
                           <Typography
                             variant="small"
-                            color="blue-gray"
+                            color="gray"
                             className="font-normal opacity-70"
                             {...(undefined as any)}
                           >
-                            {email}
+                            {org}
                           </Typography>
                         </div>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex flex-col">
+                      </td>
+                      <td className={classes}>
+                        <Chip
+                          variant="gradient"
+                          color={online ? "green" : "blue-gray"}
+                          value={online ? "Online" : "Offline"}
+                          className="w-max"
+                        />
+                      </td>
+                      <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                           {...(undefined as any)}
                         >
-                          {job}
+                          {date}
                         </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                          {...(undefined as any)}
-                        >
-                          {org}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={online ? "online" : "offline"}
-                          color={online ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                        {...(undefined as any)}
-                      >
-                        {date}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Tooltip content="Edit User">
-                        <IconButton variant="text" {...(undefined as any)}>
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip content="Edit User">
+                          <IconButton variant="text" color="blue-gray" {...(undefined as any)}>
+                            <PencilIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
+            </tbody>
+          </table>
+        </div>
       </CardBody>
+
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
         <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
           Page 1 of 10
