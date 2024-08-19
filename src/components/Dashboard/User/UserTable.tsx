@@ -13,7 +13,7 @@ import {
   Avatar,
   Tooltip,
 } from "@material-tailwind/react";
-import "../../../style/responsive.userTable.css"; // Import your custom CSS
+import "../../../style/responsive.userTable.css"; 
 
 const TABLE_HEAD = ["Member", "Function", "Status", "Employed", "Actions"];
 
