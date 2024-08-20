@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from '../layout/Dashboard';
 import AllUsers from '../pages/Dashboard/User/AllUsers';
 import AddUser from '../pages/Dashboard/User/AddUser';
+import EditUser from '../pages/Dashboard/User/EditUser';
  
 const AppRouter = () => {
   return (
@@ -10,6 +11,7 @@ const AppRouter = () => {
           <Routes>
                <Route path="dashboard" element={<Dashboard/>}>
                         <Route path="users/add" element={<AddUser/>}/>
+                        <Route path="users/edit/:id" element={<EditUser/>}/>
                         <Route path="users/" element={<AllUsers/>}/>
                         <Route path="bookings" element={<h1>bookings</h1>}/>
                         <Route path="feedback" element={<h1>All feedback</h1>}/>

@@ -196,17 +196,20 @@ function UsersTable() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <Tooltip content="Edit User">
-                            <Button 
-                              color="blue-gray"
-                              variant="filled"
-                              {...(undefined as any)}
-                              size="md"
-                              className="mr-2"
-                            >
-                               <i className="fa-solid fa-pen-to-square"></i>
-                            </Button>
-                        </Tooltip>
+                        <NavLink to="/dashboard/users/edit/1">
+                            <Tooltip content="Edit User">
+                                <Button 
+                                  color="blue-gray"
+                                  variant="filled"
+                                  {...(undefined as any)}
+                                  size="md"
+                                  className="mr-2"
+                                >
+                                  <i className="fa-solid fa-pen-to-square"></i>
+                                </Button>
+                            </Tooltip>
+                        </NavLink>
+
                         <Tooltip content="Delete User">
                             <Button 
                               color="red"

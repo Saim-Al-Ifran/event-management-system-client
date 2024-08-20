@@ -14,7 +14,7 @@ const AddUser: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Perform validation and handle the form submission
+   
     const newUser = {
       username,
       phoneNumber,
