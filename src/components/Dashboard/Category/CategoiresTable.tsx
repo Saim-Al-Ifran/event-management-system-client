@@ -12,7 +12,7 @@ import {
   Avatar,
   Tooltip,
 } from "@material-tailwind/react";
-import "../../../style/responsive.userTable.css"; 
+import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
 
 const TABLE_HEAD = ["Image", "Category name", "Actions"];

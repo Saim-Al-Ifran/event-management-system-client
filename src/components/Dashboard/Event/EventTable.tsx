@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -7,7 +6,7 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
+   Chip,
   CardFooter,
   Tabs,
   Avatar,
@@ -16,73 +15,54 @@ import {
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
 
-const TABLE_HEAD = ["Member", "Function", "Status", "Employed", "Actions"];
+const TABLE_HEAD = ["Image", "Title", "Status", "Location","Price", "Actions"];
 
 const TABLE_ROWS = [
   {
     img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    email: "john@creative-tim.com",
-    job: "Manager",
-    org: "Organization",
-    online: true,
+    title: "Drink-event",
     date: "23/04/18",
+    location:"Aftab",
+    status:'pending',
+    price:700,
+    
   },
   {
     img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    email: "alexa@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: false,
+    title: "Drink-event",
     date: "23/04/18",
+    location:"amtoli",
+    status:'active',
+    price:1000
   },
   {
     img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    email: "laurent@creative-tim.com",
-    job: "Executive",
-    org: "Projects",
-    online: false,
-    date: "19/09/17",
+    title: "Drink-event",
+    date: "23/04/18",
+    location:"Natun bazar",
+    status:'completed',
+    price:900
   },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-    name: "Michael Levi",
-    email: "michael@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: true,
-    date: "24/12/08",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-    name: "Richard Gran",
-    email: "richard@creative-tim.com",
-    job: "Manager",
-    org: "Executive",
-    online: false,
-    date: "04/10/21",
-  },
+ 
 ];
 
-function UsersTable() {
+function EventTable() {
   return (
     <Card className="users-table-card" {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray"{...(undefined as any)}>
-              Users list
+              Events list
             </Typography>
             <Typography color="gray" className="mt-1 font-normal" {...(undefined as any)}>
-              See information about all users
+              See information about all events
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <NavLink to="/dashboard/users/add">
               <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add member
+              <i className="fa-regular fa-calendar-plus"></i> Add Event
               </Button>
             </NavLink>
 
@@ -126,35 +106,18 @@ function UsersTable() {
             </thead>
             <tbody>
               {TABLE_ROWS.map(
-                ({ img, name, email, job, org, online, date }, index) => {
+                ({ img,title,date,location,price,status }, index) => {
                   const isLast = index === TABLE_ROWS.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={name}>
+                    <tr key={index}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <Avatar src={img} alt={name} size="sm"  {...(undefined as any)}/>
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                              {...(undefined as any)}
-                            >
-                              {name}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              color="gray"
-                              className="font-normal opacity-70"
-                              {...(undefined as any)}
-                            >
-                              {email}
-                            </Typography>
-                          </div>
+    
                         </div>
                       </td>
                       <td className={classes}>
@@ -165,7 +128,7 @@ function UsersTable() {
                             className="font-normal"
                             {...(undefined as any)}
                           >
-                            {job}
+                            {title}
                           </Typography>
                           <Typography
                             variant="small"
@@ -173,15 +136,21 @@ function UsersTable() {
                             className="font-normal opacity-70"
                             {...(undefined as any)}
                           >
-                            {org}
+                            {date}
                           </Typography>
                         </div>
                       </td>
                       <td className={classes}>
                         <Chip
                           variant="gradient"
-                          color={online ? "green" : "blue-gray"}
-                          value={online ? "Online" : "Offline"}
+                          color={
+                            status === "active"
+                              ? "green"
+                              : status === "completed"
+                              ? "yellow"
+                              : "blue-gray"
+                          }
+                          value={status}
                           className="w-max"
                         />
                       </td>
@@ -192,8 +161,18 @@ function UsersTable() {
                           className="font-normal"
                           {...(undefined as any)}
                         >
-                          {date}
+                          {location}
                         </Typography>
+                      </td>
+                      <td className={classes}>
+                            <Typography 
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              {...(undefined as any)}
+                            >
+                                 {price}
+                            </Typography>
                       </td>
                       <td className={classes}>
                         <NavLink to="/dashboard/users/edit/1">
@@ -246,4 +225,4 @@ function UsersTable() {
   );
 }
 
-export default UsersTable;
+export default EventTable;

@@ -6,6 +6,7 @@ import EditUser from '../pages/Dashboard/User/EditUser';
 import AllCategories from '../pages/Dashboard/Category/AllCategories';
 import AddCategory from '../pages/Dashboard/Category/AddCategory';
 import EditCategory from '../pages/Dashboard/Category/EditCategory';
+import AllEvents from '../pages/Dashboard/Event/AllEvents';
  
 const AppRouter = () => {
   return (
@@ -22,7 +23,7 @@ const AppRouter = () => {
                         <Route path="category/add" element={<AddCategory/>}/>
                         <Route path="categories" element={<AllCategories/>}/>
                         <Route path="category/edit/:id" element={<EditCategory/>}/>
-                        <Route path="events" element={<h1>All events</h1>}/>
+                        <Route path="events" element={<AllEvents/>}/>
                         <Route path="events/add" element={<h1>Add events</h1>}/>
                </Route>
           </Routes>
