@@ -138,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
                 All Categories
               </NavLink>
               <NavLink
-                to="/dashboard/categories/add"
+                to="/dashboard/category/add"
                 end
                 className={({ isActive }) =>
                   `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${
