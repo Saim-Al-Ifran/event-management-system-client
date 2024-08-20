@@ -52,7 +52,7 @@ function CategoriesTable() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <NavLink to="/dashboard/users/add">
+            <NavLink to="/dashboard/category/add">
               <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
               <i className="fa-solid fa-folder-plus"></i>
                 Add Category
@@ -127,7 +127,7 @@ function CategoriesTable() {
                       </td>
  
                       <td className={classes}>
-                        <NavLink to="/dashboard/users/edit/1">
+                        <NavLink to="/dashboard/category/edit/1">
                             <Tooltip content="Edit User">
                                 <Button 
                                   color="blue-gray"
