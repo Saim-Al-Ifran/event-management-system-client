@@ -7,6 +7,8 @@ import AllCategories from '../pages/Dashboard/Category/AllCategories';
 import AddCategory from '../pages/Dashboard/Category/AddCategory';
 import EditCategory from '../pages/Dashboard/Category/EditCategory';
 import AllEvents from '../pages/Dashboard/Event/AllEvents';
+import AddEvent from '../pages/Dashboard/Event/AddEvent';
+import EditEvent from '../pages/Dashboard/Event/EditEvent';
  
 const AppRouter = () => {
   return (
@@ -24,7 +26,8 @@ const AppRouter = () => {
                         <Route path="categories" element={<AllCategories/>}/>
                         <Route path="category/edit/:id" element={<EditCategory/>}/>
                         <Route path="events" element={<AllEvents/>}/>
-                        <Route path="events/add" element={<h1>Add events</h1>}/>
+                        <Route path="event/add" element={<AddEvent/>}/>
+                        <Route path="event/edit/:id" element={<EditEvent/>}/>
                </Route>
           </Routes>
        </Router>

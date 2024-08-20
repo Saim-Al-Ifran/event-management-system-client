@@ -184,7 +184,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
                 All Events
               </NavLink>
               <NavLink
-                to="/dashboard/events/add"
+                to="/dashboard/event/add"
                 end
                 className={({ isActive }) =>
                   `block p-2 rounded-md hover:bg-[#256caa] hover:text-white ${

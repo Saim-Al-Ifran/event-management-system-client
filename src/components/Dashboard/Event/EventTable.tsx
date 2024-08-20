@@ -60,7 +60,7 @@ function EventTable() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <NavLink to="/dashboard/users/add">
+            <NavLink to="/dashboard/event/add">
               <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
               <i className="fa-regular fa-calendar-plus"></i> Add Event
               </Button>
@@ -116,7 +116,7 @@ function EventTable() {
                     <tr key={index}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
-                          <Avatar src={img} alt={name} size="sm"  {...(undefined as any)}/>
+                          <Avatar src={img} alt={name} size="md"  {...(undefined as any)}/>
     
                         </div>
                       </td>
@@ -175,7 +175,7 @@ function EventTable() {
                             </Typography>
                       </td>
                       <td className={classes}>
-                        <NavLink to="/dashboard/users/edit/1">
+                        <NavLink to="/dashboard/event/edit/1">
                             <Tooltip content="Edit User">
                                 <Button 
                                   color="blue-gray"
