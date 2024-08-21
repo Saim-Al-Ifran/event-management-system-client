@@ -9,12 +9,11 @@ import {
   CardBody,
   CardFooter,
   Avatar,
-  Tooltip,
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css";
-import { NavLink } from "react-router-dom";
 
-const TABLE_HEAD = ["Image", "Title",  "Location", "Price", "Actions"];
+
+const TABLE_HEAD = ["Image", "Title",  "Location", "Price",];
 
 const TABLE_ROWS = [
   {
@@ -134,26 +133,7 @@ function BookingTable() {
                           ${price.toFixed(2)}
                         </Typography>
                       </td>
-                      <td className={classes}>
-                        <NavLink to="/dashboard/bookings/edit/1">
-                          <Tooltip content="Edit Booking">
-                            <Button
-                              color="blue-gray"
-                              variant="filled"
-                              size="md"
-                              className="mr-2"
-                              {...(undefined as any)}
-                            >
-                              <i className="fa-solid fa-pen-to-square"></i>
-                            </Button>
-                          </Tooltip>
-                        </NavLink>
-                        <Tooltip content="Delete Booking">
-                          <Button color="red" size="md" {...(undefined as any)}>
-                            <i className="fa-solid fa-trash"></i>
-                          </Button>
-                        </Tooltip>
-                      </td>
+ 
                     </tr>
                   );
                 }
