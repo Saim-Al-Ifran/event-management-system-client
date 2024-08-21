@@ -1,8 +1,14 @@
+import FeedbackTable from "../../../components/Dashboard/Feedback/FeedbackTable";
 
+ 
 
 const FeedBack = () => {
   return (
-    <div>FeedBack</div>
+    <>
+      <div className="container mx-auto p-6">
+          <FeedbackTable/>
+    </div>
+    </>
   )
 }
 
