@@ -12,7 +12,9 @@ import EditEvent from '../pages/Dashboard/Event/EditEvent';
 import AllBookings from '../pages/Dashboard/Bookings/AllBookings';
 import FeedBack from '../pages/Dashboard/Feedback/FeedBack';
 import Settings from '../pages/Dashboard/Settings/Settings';
-import AdminLogin from '../pages/Dashboard/Login/AdminLogin';
+import AdminLogin from '../pages/Auth/AdminLogin';
+import UserLogin from '../pages/Auth/UserLogin';
+import UserRegister from '../pages/Auth/UserRegister';
  
 const AppRouter = () => {
   return (
@@ -34,6 +36,8 @@ const AppRouter = () => {
                         <Route path="event/edit/:id" element={<EditEvent/>}/>
                </Route>
                <Route path='/admin/login' element={<AdminLogin/>}/>
+               <Route path='/login' element={<UserLogin/>}/>
+               <Route path='/register' element={<UserRegister/>}/>
           </Routes>
        </Router>
     </>
