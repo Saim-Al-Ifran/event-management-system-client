@@ -11,6 +11,7 @@ import AddEvent from '../pages/Dashboard/Event/AddEvent';
 import EditEvent from '../pages/Dashboard/Event/EditEvent';
 import AllBookings from '../pages/Dashboard/Bookings/AllBookings';
 import FeedBack from '../pages/Dashboard/Feedback/FeedBack';
+import Settings from '../pages/Dashboard/Settings/Settings';
  
 const AppRouter = () => {
   return (
@@ -23,7 +24,7 @@ const AppRouter = () => {
                         <Route path="users/" element={<AllUsers/>}/>
                         <Route path="bookings" element={<AllBookings/>}/>
                         <Route path="feedback" element={<FeedBack/>}/>
-                        <Route path="settings" element={<h1>All feedback</h1>}/>
+                        <Route path="settings" element={<Settings/>}/>
                         <Route path="category/add" element={<AddCategory/>}/>
                         <Route path="categories" element={<AllCategories/>}/>
                         <Route path="category/edit/:id" element={<EditCategory/>}/>
