@@ -17,6 +17,10 @@ import UserLogin from '../pages/Auth/UserLogin';
 import UserRegister from '../pages/Auth/UserRegister';
 import Main from '../layout/Main';
 import Home from '../pages/Home/Home';
+import Events from '../pages/Events/Events';
+import ContactUs from '../pages/ContactUs/ContactUs';
+import Categories from '../pages/Categories/Categories';
+import AboutUs from '../pages/AboutUs/AboutUs';
  
 const AppRouter = () => {
   return (
@@ -25,6 +29,10 @@ const AppRouter = () => {
         <Routes>
              <Route path='/' element={<Main/>}>
                       <Route index element={<Home/>} />
+                      <Route path='/events' element={<Events/>} />
+                      <Route path='/categories' element={<Categories/>}/>
+                      <Route path='/about' element={<AboutUs/>}/>
+                      <Route path='/contact' element={<ContactUs/>} />
              </Route>
         </Routes>
           <Routes>
