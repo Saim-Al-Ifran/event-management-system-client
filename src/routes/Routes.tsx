@@ -15,11 +15,18 @@ import Settings from '../pages/Dashboard/Settings/Settings';
 import AdminLogin from '../pages/Auth/AdminLogin';
 import UserLogin from '../pages/Auth/UserLogin';
 import UserRegister from '../pages/Auth/UserRegister';
+import Main from '../layout/Main';
+import Home from '../pages/Home/Home';
  
 const AppRouter = () => {
   return (
     <>
        <Router>
+        <Routes>
+             <Route path='/' element={<Main/>}>
+                      <Route index element={<Home/>} />
+             </Route>
+        </Routes>
           <Routes>
                <Route path="dashboard" element={<Dashboard/>}>
                         <Route path="users/add" element={<AddUser/>}/>
