@@ -84,7 +84,6 @@ const Navbar: React.FC = () => {
         </div>
         <div className="hidden md:flex w-3/12 justify-end">
           <Link to="/login">
- 
             <Button
               type="submit"
               size="md"
@@ -97,7 +96,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
         {isOpen && (
-          <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md z-10">
+          <div className="md:hidden absolute top-12 left-0 w-full bg-white shadow-md z-10">
             <ul className="flex flex-col items-center">
               <li className={`p-4 border-b-2 border-[#506aff] duration-200 cursor-pointer ${isActive('/')}`}>
                 <Link to="/" onClick={toggleMenu}><i className="fa-solid fa-house-chimney mr-1"></i>Home</Link>
@@ -114,9 +113,17 @@ const Navbar: React.FC = () => {
               <li className={`p-4 border-b-2 border-[#506aff] duration-200 cursor-pointer ${isActive('/contact')}`}>
                 <Link to="/contact" onClick={toggleMenu}><i className="fa-solid fa-envelope mr-1"></i>Contact Us</Link>
               </li>
-              <li className="p-4 w-full text-center">
+              <li className="p-4  text-center">
                 <Link to="/login" onClick={toggleMenu}>
-                  <Button color="green" {...(undefined as any)}><i className="fa-solid fa-user mr-1"></i>Login</Button>
+                <Button
+                  type="submit"
+                  size="md"
+                  className="mb-4 bg-[#3F51B5] flex items-center justify-center"
+                  {...(undefined as any)}
+                > 
+                  <i className="fa-solid fa-user mr-1"></i>
+                  Login
+                </Button>
                 </Link>
               </li>
             </ul>

@@ -2,3 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Slick Carousel default styles */
+.slick-prev:before,
+.slick-next:before {
+  color: #3F51B5; /* Arrow color */
+}
+
+/* Custom dot style */
+.slick-dots li button:before {
+  color: #3F51B5; /* Dot color */
+}
+ 

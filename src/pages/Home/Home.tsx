@@ -1,8 +1,11 @@
 import React from 'react'
+import Banner from './sections/Banner'
 
 const Home:React.FC = () => {
   return (
-    <div>Home</div>
+    <>
+       <Banner/>
+    </>
   )
 }
 
