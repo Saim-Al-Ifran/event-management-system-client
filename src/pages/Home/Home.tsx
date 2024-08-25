@@ -4,6 +4,7 @@ import EventCategories from './sections/EventCategories'
 import EventsSection from './sections/EventSection'
 import LatestEventSection from './sections/LatestEventSection'
 import Newsletter from './sections/Newsletter'
+ 
 
 const Home:React.FC = () => {
   return (
@@ -13,6 +14,7 @@ const Home:React.FC = () => {
        <EventsSection/>
        <LatestEventSection/>
        <Newsletter/>
+        
     </>
   )
 }
