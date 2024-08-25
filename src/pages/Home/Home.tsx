@@ -3,6 +3,7 @@ import Banner from './sections/Banner'
 import EventCategories from './sections/EventCategories'
 import EventsSection from './sections/EventSection'
 import LatestEventSection from './sections/LatestEventSection'
+import Newsletter from './sections/Newsletter'
 
 const Home:React.FC = () => {
   return (
@@ -11,6 +12,7 @@ const Home:React.FC = () => {
        <EventCategories/>
        <EventsSection/>
        <LatestEventSection/>
+       <Newsletter/>
     </>
   )
 }
