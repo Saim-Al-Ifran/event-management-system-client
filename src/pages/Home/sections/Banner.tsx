@@ -7,7 +7,6 @@ const image1 = 'https://assets.editorial.aetnd.com/uploads/2010/02/lunarnewyearf
 const image3 = 'https://www.kayak.co.uk/news/wp-content/uploads/sites/5/2022/01/dest_thailand_chiang-mai_yi_peng-festival_gettyimages-687006760_universal_within-usage-period_26382.jpg';
 
 
-
 const Banner = () => {
   return (
     <>
@@ -39,13 +38,16 @@ const Banner = () => {
             <p className="text-white text-lg mb-6">
              Create memorable events with our comprehensive management tools
             </p>
-            <Button
-              size="lg"
-              className="bg-[#3F51B5]"
-              {...(undefined as any)}
-            >
-              Explore Events
-            </Button>
+            <Link to="/events">
+                <Button
+                  size="lg"
+                  className="bg-[#3F51B5]"
+                  {...(undefined as any)}
+                >
+                  Explore Events
+                </Button>
+            </Link>
+
           </div>
         </div>
         <div className="relative flex items-center justify-center h-full">
@@ -62,13 +64,15 @@ const Banner = () => {
             <p className="text-white text-lg mb-6">
               Connect with like-minded learners and experts.
             </p>
-            <Button
-              size="lg"
-              className="bg-[#3F51B5]"
-              {...(undefined as any)}
-            >
-              Explore Events
-            </Button>
+            <Link to="/events">
+                <Button
+                  size="lg"
+                  className="bg-[#3F51B5]"
+                  {...(undefined as any)}
+                >
+                  Explore Events
+                </Button>
+            </Link>
           </div>
         </div>
         <div className="relative flex items-center justify-center h-full">
