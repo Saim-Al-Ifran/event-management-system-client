@@ -21,6 +21,7 @@ import Events from '../pages/Events/Events';
 import ContactUs from '../pages/ContactUs/ContactUs';
 import Categories from '../pages/Categories/Categories';
 import AboutUs from '../pages/AboutUs/AboutUs';
+import AdminOrSuperAdmin from './AdminOrSuperAdmin';
  
 const AppRouter = () => {
   return (
@@ -36,7 +37,12 @@ const AppRouter = () => {
              </Route>
         </Routes>
           <Routes>
-               <Route path="dashboard" element={<Dashboard/>}>
+               <Route path="dashboard" element={
+                    <AdminOrSuperAdmin>
+                        <Dashboard/>
+                    </AdminOrSuperAdmin>
+                     
+                }>
                         <Route path="users/add" element={<AddUser/>}/>
                         <Route path="users/edit/:id" element={<EditUser/>}/>
                         <Route path="users/" element={<AllUsers/>}/>

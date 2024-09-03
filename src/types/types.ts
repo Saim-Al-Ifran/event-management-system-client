@@ -14,13 +14,16 @@ export interface AuthState {
     accessToken?: string;
     user?: User;
   }
-
-
+  
 export interface UserLoginResponse {
     data: any;
     message:string;
     token: string;
     user: User;
   }
+
+export interface DecodedToken {
+    [key: string]: any;
+} 
   
  
