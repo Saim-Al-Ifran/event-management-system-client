@@ -17,6 +17,7 @@ export interface AuthState {
 
 
 export interface UserLoginResponse {
+    data: any;
     message:string;
     token: string;
     user: User;

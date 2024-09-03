@@ -25,6 +25,7 @@ const authApi = apiSlice.injectEndpoints({
                         try {
                             const result = await queryFulfilled;
                             const accessToken = result?.data?.token;
+                            
                             const expirationTime = new Date();
                             expirationTime.setTime(expirationTime.getTime() + 60 * 60 * 1000);                 
         
@@ -32,14 +33,14 @@ const authApi = apiSlice.injectEndpoints({
                                 'token',
                                 JSON.stringify({
                                     accessToken: accessToken,
-                                    user: result?.data?.user,
+                                    user: result?.data?.data?.user,
                                 }),
                                 { expires: expirationTime }
                             );
         
                             dispatch(userLoggedIn({
                                 accessToken:accessToken,
-                                user:result?.data?.user
+                                user:result?.data?.data?.user
                             }))
         
                             setTimeout(() => {

@@ -5,8 +5,10 @@ import { IFormInput } from "../../types/types";
 import { toast } from "react-hot-toast";
 import { useAdminLoginMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
+ 
 
 const AdminLogin: React.FC = () => {
+ 
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
   const [adminLogin,{isError,error,isSuccess}] = useAdminLoginMutation();
