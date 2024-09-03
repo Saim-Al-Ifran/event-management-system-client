@@ -5,7 +5,7 @@ import { apiSlice } from '../api/apiSlice';
 import { EndpointBuilder } from '@reduxjs/toolkit/query';
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { UserLoginResponse } from '../../types/types';
-import { UserLoginInput } from '../../types/types';
+import { UserLoginInput } from '../../types/api-types';
 
 const clearToken = (dispatch:Dispatch) => {
     Cookies.remove('token');
@@ -56,4 +56,4 @@ const authApi = apiSlice.injectEndpoints({
       })
 })
 
-export const {use} = authApi;
+export const {useAdminLoginMutation} = authApi;

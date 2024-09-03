@@ -1,15 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@material-tailwind/react";
 import { IFormInput } from "../../types/types";
+import { toast } from "react-hot-toast";
+import { useAdminLoginMutation } from "../../features/auth/authApi";
+import { useNavigate } from "react-router-dom";
 
 const AdminLogin: React.FC = () => {
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
-
+  const [adminLogin,{isError,error,isSuccess}] = useAdminLoginMutation();
   const onSubmit: SubmitHandler<IFormInput> = data => {
     console.log("Email:", data.email, "Password:", data.password);
-    // Add your login logic here
+    adminLogin({
+        email:data.email,
+        password:data.password
+    })
   };
+  useEffect(()=>{
+      if(isSuccess){
+           navigate('/dashboard');
+           toast.success("login success")
+      }
+      if(isError){
+           toast.error(error?.data?.message);
+          
+           
+      }
+
+  },[isSuccess,isError,navigate])
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -47,8 +66,8 @@ const AdminLogin: React.FC = () => {
               {...register("password", {
                 required: "Password is required",
                 minLength: {
-                  value: 3,
-                  message: "Password must be at least 3 characters",
+                  value: 6,
+                  message: "Password must be at least 6 characters",
                 },
               })}
               type="password"
@@ -72,7 +91,7 @@ const AdminLogin: React.FC = () => {
           </div>
         </form>
         <p className="text-sm text-center text-gray-500">
-          © {new Date().getFullYear()} Admin Panel. All rights reserved.
+          © {new Date().getFullYear()} EventVerse. All rights reserved.
         </p>
       </div>
     </div>

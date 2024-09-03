@@ -22,8 +22,4 @@ export interface UserLoginResponse {
     user: User;
   }
   
-  // Define the login input data type
-export interface UserLoginInput {
-    email: string;
-    password: string;
-  }
+ 
