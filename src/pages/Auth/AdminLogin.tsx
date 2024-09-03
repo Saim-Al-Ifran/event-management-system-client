@@ -1,46 +1,42 @@
+import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@material-tailwind/react";
-import React, { useState } from "react";
+import { IFormInput } from "../../types/types";
 
 const AdminLogin: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<IFormInput> = data => {
+    console.log("Email:", data.email, "Password:", data.password);
     // Add your login logic here
-    if (email === "" || password === "") {
-      setError("Please fill in both fields");
-    } else {
-      // Handle login logic
-      console.log("Email:", email, "Password:", password);
-      setError("");
-    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white shadow-lg rounded-lg">
         <h2 className="text-3xl font-bold text-center text-gray-900">Admin Login</h2>
-        {error && (
-          <div className="p-4 text-sm text-red-600 bg-red-100 border border-red-200 rounded">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
             </label>
             <input
               id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="block w-full p-3 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                  message: "Invalid email address",
+                },
+              })}
+              className={`block w-full p-3 mt-1 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
               placeholder="admin@example.com"
             />
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -48,19 +44,27 @@ const AdminLogin: React.FC = () => {
             </label>
             <input
               id="password"
-              name="password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 3,
+                  message: "Password must be at least 3 characters",
+                },
+              })}
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="block w-full p-3 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className={`block w-full p-3 mt-1 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
               placeholder="••••••••"
             />
+            {errors.password && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <div>
-            
             <Button
               type="submit"
-              className="flex justify-center w-full  bg-blue-gray-700"
+              className="flex justify-center w-full bg-blue-gray-700"
               {...(undefined as any)}
             >
               Log In
