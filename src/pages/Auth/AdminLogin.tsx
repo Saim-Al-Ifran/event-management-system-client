@@ -13,7 +13,7 @@ const AdminLogin: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
   const [adminLogin,{isError,error,isSuccess}] = useAdminLoginMutation();
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    console.log("Email:", data.email, "Password:", data.password);
+     
     adminLogin({
         email:data.email,
         password:data.password
@@ -25,9 +25,7 @@ const AdminLogin: React.FC = () => {
            toast.success("login success")
       }
       if(isError){
-           toast.error(error?.data?.message);
-          
-           
+           toast.error(error?.data?.message);          
       }
 
   },[isSuccess,isError,navigate])

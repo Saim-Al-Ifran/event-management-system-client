@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import useJwtDecode from './useDecode'; // Assuming this is your custom decode hook
+import {jwtDecode} from 'jwt-decode';
+import { DecodedToken } from '../../types/types';
 
 const useUserRoles = () => {
   const [roles, setRoles] = useState({
@@ -10,24 +11,26 @@ const useUserRoles = () => {
   });
 
   useEffect(() => {
-    const tokenCookie = Cookies.get('token');
-
+    
+    const tokenCookie = Cookies.get('token');    
     if (tokenCookie) {
-      const { decodedToken, error } = useJwtDecode(tokenCookie);
+      try {
+          const { accessToken } = JSON.parse(tokenCookie);
+          const decodedToken = jwtDecode<DecodedToken | null>(accessToken);
+          const role = decodedToken?.role ;
+          
+          setRoles({
+            isSuperAdmin: role === 'super-admin',
+            isAdmin: role === 'admin', 
+            isUser: role === 'user',
+          });
 
-      if (error) {
-        console.error('Error decoding token:', error);
-        return;
+      } catch (error) {
+          console.error('Error decoding token:', error);
       }
 
-      const role = decodedToken?.role ;
-
-      setRoles({
-        isSuperAdmin: role === 'super-admin',
-        isAdmin: role === 'admin',
-        isUser: role === 'user',
-      });
-    }
+    } 
+    
   }, []);
 
   return roles;

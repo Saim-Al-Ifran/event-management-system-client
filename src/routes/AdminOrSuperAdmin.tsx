@@ -11,7 +11,7 @@ const AdminOrSuperAdmin:React.FC<AdminOrSuperAdminProps > = ({ children }) => {
     const {isSuperAdmin, isAdmin } = useUserRoles();
     const isAuthenticated = Cookies.get('token');
     const location = useLocation();
-
+    
     if (isAuthenticated && isAdmin === false && isSuperAdmin === false   ) {
         return (
             <div className="flex justify-center items-center h-screen">

@@ -22,6 +22,7 @@ import ContactUs from '../pages/ContactUs/ContactUs';
 import Categories from '../pages/Categories/Categories';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import AdminOrSuperAdmin from './AdminOrSuperAdmin';
+import NotFound from '../components/shared/NotFound';
  
 const AppRouter = () => {
   return (
@@ -59,6 +60,7 @@ const AppRouter = () => {
                <Route path='/admin/login' element={<AdminLogin/>}/>
                <Route path='/login' element={<UserLogin/>}/>
                <Route path='/register' element={<UserRegister/>}/>
+               <Route path="*" element={<NotFound/>} />
           </Routes>
        </Router>
     </>
