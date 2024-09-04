@@ -1,10 +1,27 @@
 import React from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { userLoggedOut } from '../../features/auth/authSlice';
+
 
 interface TopNavBarProps {
   toggleSidebar: () => void;
 }
 
+
 const TopNavBar: React.FC<TopNavBarProps> = ({ toggleSidebar }) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
+
+  const handleLogout = async() => {
+    Cookies.remove('token');
+    dispatch(userLoggedOut());
+    toast.success("successfully logout");
+    navigate('/admin/login');    
+  };
+
   return (
     <div className="navbar bg-base-100 shadow-md p-4 flex justify-between items-center">
       {/* Hamburger menu for mobile */}
@@ -49,7 +66,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ toggleSidebar }) => {
               </a>
             </li>
             <li>
-              <a>Logout</a>
+              <a onClick={handleLogout}>Logout</a>
             </li>
           </ul>
         </div>
