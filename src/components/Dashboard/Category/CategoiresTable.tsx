@@ -6,7 +6,6 @@ import {
   Typography,
   Button,
   CardBody,
- 
   CardFooter,
   Tabs,
   Avatar,
@@ -14,57 +13,61 @@ import {
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
+import { useGetCategoriesQuery } from "../../../features/categories/categoriesApi";
+import { Category } from "../../../types/api-types";
+import { FadeLoader } from 'react-spinners';
+import { useState } from "react";
 
-const TABLE_HEAD = ["Image", "Category name", "Actions"];
-
-const TABLE_ROWS = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    job: "Manager",
-    org: "Organization", 
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    job: "Programator",
-    org: "Developer",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    job: "Executive",
-    org: "Projects",
-  },
-];
+const TABLE_HEAD = ["Image", "Category Name", "Actions"];
 
 function CategoriesTable() {
+  const [page, setPage] = useState(1);
+  const limit = 3;
+  const { data: categories, isLoading, isError } = useGetCategoriesQuery({ page, limit});
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FadeLoader color="#607D8B" size={50} {...(undefined as any)}/>
+      </div>
+    );
+  }
+  if (isError) return <div>Error fetching categories</div>;
+
+  const handlePrevious = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (categories?.totalPages && page < categories.totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+
   return (
     <Card className="users-table-card" {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
-            <Typography variant="h5" color="blue-gray"{...(undefined as any)}>
-             Category list
+            <Typography variant="h5" color="blue-gray" {...(undefined as any)}>
+              Category List
             </Typography>
             <Typography color="gray" className="mt-1 font-normal" {...(undefined as any)}>
-              See information about all users
+              See information about all categories
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <NavLink to="/dashboard/category/add">
               <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
-              <i className="fa-solid fa-folder-plus"></i>
+                <i className="fa-solid fa-folder-plus"></i>
                 Add Category
               </Button>
             </NavLink>
-
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <Tabs value="all" className="w-full md:w-max">
-   
-          </Tabs>
+          <Tabs value="all" className="w-full md:w-max"></Tabs>
           <div className="w-full md:w-72 mb-4">
             <Input
               label="Search"
@@ -74,7 +77,7 @@ function CategoriesTable() {
           </div>
         </div>
       </CardHeader>
- 
+
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
         <div className="table-container flex justify-center items-center">
           <table className="users-table w-full min-w-max table-auto text-left">
@@ -98,63 +101,53 @@ function CategoriesTable() {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(
-                ({ img, name, job}, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
+              {categories?.data?.map((category:Category, index:number) => {
+                const { image, name } = category; 
+                const isLast = index === categories.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
 
-                  return (
-                    <tr key={name}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar src={img} alt={name} size="md"  {...(undefined as any)}/>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
+                return (
+                  <tr key={category._id}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <Avatar src={image} alt={name} size="md" {...(undefined as any)}/>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                        {...(undefined as any)}
+                      >
+                        {name}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <NavLink to={`/dashboard/category/edit/${category._id}`}>
+                        <Tooltip content="Edit Category">
+                          <Button
                             color="blue-gray"
-                            className="font-normal"
+                            variant="filled"
+                            size="md"
+                            className="mr-2"
                             {...(undefined as any)}
                           >
-                            {job}
-                          </Typography>
-   
-                        </div>
-                      </td>
- 
-                      <td className={classes}>
-                        <NavLink to="/dashboard/category/edit/1">
-                            <Tooltip content="Edit User">
-                                <Button 
-                                  color="blue-gray"
-                                  variant="filled"
-                                  {...(undefined as any)}
-                                  size="md"
-                                  className="mr-2"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </Button>
-                            </Tooltip>
-                        </NavLink>
-
-                        <Tooltip content="Delete User">
-                            <Button 
-                              color="red"
-                              {...(undefined as any)}
-                              size="md"
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </Button>
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </Button>
                         </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
+                      </NavLink>
+                      <Tooltip content="Delete Category">
+                        <Button color="red" size="md" {...(undefined as any)}>
+                          <i className="fa-solid fa-trash"></i>
+                        </Button>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -162,13 +155,13 @@ function CategoriesTable() {
 
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
         <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-          Page 1 of 10
+        Page {page} of {categories?.totalPages || 1}
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={page === 1} {...(undefined as any)}>
             Previous
           </Button>
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
+          <Button variant="outlined" size="sm" onClick={handleNext} disabled={page === categories?.totalPages} {...(undefined as any)}>
             Next
           </Button>
         </div>
