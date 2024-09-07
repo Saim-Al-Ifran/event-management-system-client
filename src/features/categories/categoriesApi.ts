@@ -19,6 +19,12 @@ const categoriesApi = apiSlice.injectEndpoints({
       },
       providesTags: ['Categories'],
     }),
+    getSingleCategory:builder.query<Category[],string>({
+      query:(id)=>`/event-administration/categories/${id}`,
+      providesTags:(_result,_error,id)=>[
+        {type:'category', id}
+    ]
+    }),
     
     createCategory: builder.mutation<void, Partial<Category>>({
       query: (data) => ({
@@ -54,6 +60,7 @@ const categoriesApi = apiSlice.injectEndpoints({
 
 export const {
   useGetCategoriesQuery,
+  useGetSingleCategoryQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
