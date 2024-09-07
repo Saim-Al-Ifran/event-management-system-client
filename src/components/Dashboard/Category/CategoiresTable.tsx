@@ -13,10 +13,12 @@ import {
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
-import { useGetCategoriesQuery } from "../../../features/categories/categoriesApi";
+import { useDeleteCategoryMutation, useGetCategoriesQuery } from "../../../features/categories/categoriesApi";
 import { Category } from "../../../types/api-types";
-import { FadeLoader } from 'react-spinners';
-import { useState } from "react";
+import { ClipLoader, FadeLoader } from 'react-spinners';
+import { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
+ 
 
 const TABLE_HEAD = ["Image", "Category Name", "Actions"];
 
@@ -25,7 +27,30 @@ function CategoriesTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const limit = 3;
   const { data: categories, isLoading, isError, error } = useGetCategoriesQuery({ page, limit, search: searchQuery });
-  
+  const [deleteCategory,{isSuccess:delSuccess,isError:delError}] = useDeleteCategoryMutation();
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
+ 
+  useEffect(()=>{
+          if(delSuccess){
+ 
+           Swal.fire({
+            title: '<span>Deleted!</span>',
+            html: '<span>The category has been deleted.</span>',
+            icon: 'success',
+            confirmButtonColor:'#607D8B'
+          });
+
+          }
+
+          if(delError){
+            Swal.fire(
+              'Error!',
+              'Failed to delete the application.',
+              'error'
+            );
+         }
+
+  },[delSuccess,delError])
 
   const noCategoriesFound = isError && error?.status === 404 && error?.data?.message === "No categories found";
 
@@ -48,6 +73,23 @@ function CategoriesTable() {
       setPage(page + 1);
     }
   };
+  const handleDeleteCategory = async (id:string)=>{
+    
+          // await deleteCategory(id);
+          const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#607D8B',
+            cancelButtonColor: '#F44336',
+            confirmButtonText: 'Yes, delete it!'
+          });
+          if(result.isConfirmed){  
+            setDeletingCategoryId(id)
+            await deleteCategory(id)
+          }
+  }
 
   return (
     <Card className="users-table-card" {...(undefined as any)}>
@@ -153,8 +195,18 @@ function CategoriesTable() {
                           </Tooltip>
                         </NavLink>
                         <Tooltip content="Delete Category">
-                          <Button color="red" size="md" {...(undefined as any)}>
-                            <i className="fa-solid fa-trash"></i>
+                        <Button
+                            color="red"
+                            size="md"
+                            onClick={() => handleDeleteCategory(category._id)}
+                            disabled={deletingCategoryId === category._id} // Disable and show loading for the clicked ca
+                            {...(undefined as any)}
+                          >
+                            {deletingCategoryId === category._id ? (
+                              <span><ClipLoader color="white" size={15} /></span>
+                            ) : (
+                              <i className="fa-solid fa-trash"></i>
+                            )}
                           </Button>
                         </Tooltip>
                       </td>

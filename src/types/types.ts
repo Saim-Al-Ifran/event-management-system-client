@@ -25,5 +25,11 @@ export interface UserLoginResponse {
 export interface DecodedToken {
     [key: string]: any;
 } 
+
+export interface CategoryFormData {
+  name: string;
+  description: string;
+  image: FileList;
+}
   
  
