@@ -22,8 +22,12 @@ const TABLE_HEAD = ["Image", "Category Name", "Actions"];
 
 function CategoriesTable() {
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const limit = 3;
-  const { data: categories, isLoading, isError } = useGetCategoriesQuery({ page, limit});
+  const { data: categories, isLoading, isError, error } = useGetCategoriesQuery({ page, limit, search: searchQuery });
+  
+
+  const noCategoriesFound = isError && error?.status === 404 && error?.data?.message === "No categories found";
 
   if (isLoading) {
     return (
@@ -32,7 +36,8 @@ function CategoriesTable() {
       </div>
     );
   }
-  if (isError) return <div>Error fetching categories</div>;
+
+  if (isError && !noCategoriesFound) return <div>Error fetching categories</div>;
 
   const handlePrevious = () => {
     if (page > 1) setPage(page - 1);
@@ -43,7 +48,6 @@ function CategoriesTable() {
       setPage(page + 1);
     }
   };
-
 
   return (
     <Card className="users-table-card" {...(undefined as any)}>
@@ -72,6 +76,8 @@ function CategoriesTable() {
             <Input
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               {...(undefined as any)}
             />
           </div>
@@ -80,92 +86,114 @@ function CategoriesTable() {
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
         <div className="table-container flex justify-center items-center">
-          <table className="users-table w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                      {...(undefined as any)}
+          {noCategoriesFound ? (
+            <div className="text-center p-4">
+              <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 
+                No categories found for the search term "{searchQuery}"
+              </Typography>
+            </div>
+          ) : (
+            <table className="users-table w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                     >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {categories?.data?.map((category:Category, index:number) => {
-                const { image, name } = category; 
-                const isLast = index === categories.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={category._id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar src={image} alt={name} size="md" {...(undefined as any)}/>
-                      </div>
-                    </td>
-                    <td className={classes}>
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-normal"
+                        className="font-normal leading-none opacity-70"
                         {...(undefined as any)}
                       >
-                        {name}
+                        {head}
                       </Typography>
-                    </td>
-                    <td className={classes}>
-                      <NavLink to={`/dashboard/category/edit/${category._id}`}>
-                        <Tooltip content="Edit Category">
-                          <Button
-                            color="blue-gray"
-                            variant="filled"
-                            size="md"
-                            className="mr-2"
-                            {...(undefined as any)}
-                          >
-                            <i className="fa-solid fa-pen-to-square"></i>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {categories?.data?.map((category: Category, index: number) => {
+                  const { image, name } = category;
+                  const isLast = index === categories.data.length - 1;
+                  const classes = isLast
+                    ? "p-4"
+                    : "p-4 border-b border-blue-gray-50";
+
+                  return (
+                    <tr key={category._id}>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Avatar src={image} alt={name} size="md" {...(undefined as any)}/>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                          {...(undefined as any)}
+                        >
+                          {name}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <NavLink to={`/dashboard/category/edit/${category._id}`}>
+                          <Tooltip content="Edit Category">
+                            <Button
+                              color="blue-gray"
+                              variant="filled"
+                              size="md"
+                              className="mr-2"
+                              {...(undefined as any)}
+                            >
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </Button>
+                          </Tooltip>
+                        </NavLink>
+                        <Tooltip content="Delete Category">
+                          <Button color="red" size="md" {...(undefined as any)}>
+                            <i className="fa-solid fa-trash"></i>
                           </Button>
                         </Tooltip>
-                      </NavLink>
-                      <Tooltip content="Delete Category">
-                        <Button color="red" size="md" {...(undefined as any)}>
-                          <i className="fa-solid fa-trash"></i>
-                        </Button>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       </CardBody>
 
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
-        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-        Page {page} of {categories?.totalPages || 1}
-        </Typography>
-        <div className="flex gap-2">
-        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={page === 1} {...(undefined as any)}>
-            Previous
-          </Button>
-          <Button variant="outlined" size="sm" onClick={handleNext} disabled={page === categories?.totalPages} {...(undefined as any)}>
-            Next
-          </Button>
-        </div>
-      </CardFooter>
+      {!noCategoriesFound && (
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
+          <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
+            Page {page} of {categories?.totalPages || 1}
+          </Typography>
+          <div className="flex gap-2">
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={handlePrevious}
+              disabled={page === 1}
+              {...(undefined as any)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={handleNext}
+              disabled={page === categories?.totalPages}
+              {...(undefined as any)}
+            >
+              Next
+            </Button>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
