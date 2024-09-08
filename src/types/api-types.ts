@@ -14,3 +14,17 @@ export interface CategoryRequest{
     limit?: number;
     search?: string;
   }
+export interface FeedbackRequest{
+  page?: number;
+  limit?: number;
+}
+export interface FeedbackResponse{
+  _id:string,
+  title: string,
+  email: string,
+  phoneNumber: string,
+  message: string,
+  status: string,
+  author: string,
+  createdAt: string,
+}
