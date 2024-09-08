@@ -31,5 +31,18 @@ export interface CategoryFormData {
   description: string;
   image: FileList;
 }
+
+export interface SocialLinks {
+  facebook: string;
+  twitter: string;
+  instagram: string;
+}
+
+export interface SettingsState {
+  siteName: string;
+  siteLogo: File | null;  
+  footerDescription: string;
+  socialLinks: SocialLinks;
+}
   
  

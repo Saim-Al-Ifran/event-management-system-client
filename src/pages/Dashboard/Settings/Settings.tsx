@@ -1,18 +1,9 @@
 import { Button } from "@material-tailwind/react";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-
-interface SocialLinks {
-  facebook: string;
-  twitter: string;
-  instagram: string;
-}
-
-interface SettingsState {
-  siteName: string;
-  siteLogo: File | null;
-  footerDescription: string;
-  socialLinks: SocialLinks;
-}
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useCreateSettingsMutation, useGetSettingsQuery } from "../../../features/settings/settingsApi"; 
+import { FadeLoader } from "react-spinners";
+import toast from "react-hot-toast";
+import { SettingsState } from "../../../types/types";
 
 const Settings: React.FC = () => {
   const [settings, setSettings] = useState<SettingsState>({
@@ -25,9 +16,41 @@ const Settings: React.FC = () => {
       instagram: "",
     },
   });
+  
+  const [preview, setPreview] = useState<string | null>(null); 
+  const { data: settingsData, isLoading, isError } = useGetSettingsQuery();  
+  const [createSettings,{isLoading:isFecthing,isError:hasError,isSuccess,error}] = useCreateSettingsMutation();
 
-  const [preview, setPreview] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (settingsData) {
+      setSettings({
+        siteName: settingsData.siteName || "",
+        siteLogo: null, // File type won't be available from the API
+        footerDescription: settingsData.footerDescription || "",
+        socialLinks: {
+          facebook: settingsData.socialLinks.facebook || "",
+          twitter: settingsData.socialLinks.twitter || "",
+          instagram: settingsData.socialLinks.instagram || "",
+        },
+      });
 
+     
+      if (settingsData.siteLogo) {
+        setPreview(settingsData.siteLogo); 
+      }
+    }
+  }, [settingsData]);
+  
+  useEffect(()=>{
+         if(isSuccess){
+              toast.success("Successfully Updated settings data");
+         }
+         if(hasError){
+              toast.error(error?.data?.message);
+              console.log(error)
+         }
+  },[isSuccess,hasError])
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -55,22 +78,42 @@ const Settings: React.FC = () => {
         ...prevSettings,
         siteLogo: file,
       }));
-      setPreview(URL.createObjectURL(file)); // Set the preview URL for the image
+      setPreview(URL.createObjectURL(file)); 
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here, e.g., saving the data
-    console.log(settings);
+    console.log(settings.socialLinks.facebook)
+    const formData = new FormData();
+    formData.append("siteName", settings.siteName);
+    if (settings.siteLogo) {
+      formData.append("image", settings.siteLogo);  
+    }
+    formData.append("footerDescription", settings.footerDescription);
+    formData.append("facebook", settings.socialLinks.facebook);
+    formData.append("twitter", settings.socialLinks.twitter);
+    formData.append("instagram", settings.socialLinks.instagram);
+
+     await(createSettings(formData));
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FadeLoader color="#607D8B" size={50} {...(undefined as any)} />
+      </div>
+    );
+  }
+
+  if (isError) return <p>Failed to load settings.</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-6">Site Settings</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Site Name */}
+
           <div>
             <label htmlFor="siteName" className="block text-sm font-medium text-gray-700">
               Site Name
@@ -85,7 +128,7 @@ const Settings: React.FC = () => {
             />
           </div>
 
-          {/* Site Logo */}
+       
           <div>
             <label htmlFor="siteLogo" className="block text-sm font-medium text-gray-700">
               Site Logo
@@ -97,7 +140,7 @@ const Settings: React.FC = () => {
               onChange={handleFileChange}
               className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             />
-            {/* Image Preview */}
+          
             {preview && (
               <div className="mt-4">
                 <img
@@ -124,7 +167,7 @@ const Settings: React.FC = () => {
             />
           </div>
 
-          {/* Social Links - Facebook */}
+       
           <div>
             <label htmlFor="facebook" className="block text-sm font-medium text-gray-700">
               Facebook
@@ -139,7 +182,6 @@ const Settings: React.FC = () => {
             />
           </div>
 
-          {/* Social Links - Twitter */}
           <div>
             <label htmlFor="twitter" className="block text-sm font-medium text-gray-700">
               Twitter
@@ -154,7 +196,6 @@ const Settings: React.FC = () => {
             />
           </div>
 
-          {/* Social Links - Instagram */}
           <div>
             <label htmlFor="instagram" className="block text-sm font-medium text-gray-700">
               Instagram
@@ -170,14 +211,15 @@ const Settings: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div >
+       
+        <div>
           <Button
-            type="submit"
-            className="w-full"
-            color="blue-gray"
-            {...(undefined as any)}
-          >
+           loading={isFecthing} 
+           type="submit" 
+           className="w-full" 
+           color="blue-gray"
+           {...(undefined as any)}
+           >
             Save Settings
           </Button>
         </div>
@@ -185,6 +227,5 @@ const Settings: React.FC = () => {
     </div>
   );
 };
-
 
 export default Settings;
