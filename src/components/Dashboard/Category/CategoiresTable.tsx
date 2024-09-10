@@ -25,6 +25,7 @@ const TABLE_HEAD = ["Image", "Category Name", "Actions"];
 function CategoriesTable() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const limit = 3;
   const { data: categories, isLoading, isError, error } = useGetCategoriesQuery({ page, limit, search: searchQuery });
   const [deleteCategory,{isSuccess:delSuccess,isError:delError}] = useDeleteCategoryMutation();
@@ -50,7 +51,12 @@ function CategoriesTable() {
             );
          }
 
-  },[delSuccess,delError])
+  },[delSuccess,delError]);
+
+  useEffect(() => {
+     setPaginationLoading(false);  
+  }, [categories]);
+
 
   const noCategoriesFound = isError && error?.status === 404 && error?.data?.message === "No categories found";
 
@@ -65,17 +71,18 @@ function CategoriesTable() {
   if (isError && !noCategoriesFound) return <div>Error fetching categories</div>;
 
   const handlePrevious = () => {
+    setPaginationLoading(true);
     if (page > 1) setPage(page - 1);
   };
 
   const handleNext = () => {
     if (categories?.totalPages && page < categories.totalPages) {
+      setPaginationLoading(true);
       setPage(page + 1);
     }
   };
   const handleDeleteCategory = async (id:string)=>{
     
-          // await deleteCategory(id);
           const result = await Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -127,7 +134,12 @@ function CategoriesTable() {
       </CardHeader>
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
-        <div className="table-container flex justify-center items-center">
+        {paginationLoading ? (
+            <div className="flex justify-center">
+                <ClipLoader color="#607D8B" size={30} />
+            </div>
+        ):(
+                <div className="table-container flex justify-center items-center">
           {noCategoriesFound ? (
             <div className="text-center p-4">
               <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 
@@ -217,6 +229,8 @@ function CategoriesTable() {
             </table>
           )}
         </div>
+        )}
+  
       </CardBody>
 
       {!noCategoriesFound && (

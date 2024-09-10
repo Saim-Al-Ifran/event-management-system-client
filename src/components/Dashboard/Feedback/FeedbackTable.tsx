@@ -7,8 +7,8 @@ import {
   Button
 } from "@material-tailwind/react";
 import { useGetFeedbackQuery } from "../../../features/feedback/feedbackApi";
-import { FadeLoader } from "react-spinners";
-import { useState } from "react";
+import { ClipLoader, FadeLoader } from "react-spinners";
+import { useEffect, useState } from "react";
 import { FeedbackResponse } from "../../../types/api-types";
 
 const TABLE_HEAD = ["Title", "Email", "Phone Number", "Message"];
@@ -16,14 +16,21 @@ const TABLE_HEAD = ["Title", "Email", "Phone Number", "Message"];
 function FeedbackTable() {
   const [page, setPage] = useState(1);
   const limit = 5;
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const { data: feedBacks, error, isLoading } = useGetFeedbackQuery({page,limit});
+  
+  useEffect(() => {
+    setPaginationLoading(false);  
+  }, [feedBacks]);
 
   const handlePrevious = () => {
+    setPaginationLoading(true);
     if (page > 1) setPage(page - 1);
   };
 
   const handleNext = () => {
     if (feedBacks?.totalPages && page < feedBacks.totalPages) {
+      setPaginationLoading(true); 
       setPage(page + 1);
     }
   };
@@ -45,9 +52,14 @@ function FeedbackTable() {
           Read valuable feedback from our users
         </Typography>
       </CardHeader>
-
+ 
       <CardBody className="px-4 pt-2 pb-4" {...(undefined as any)}>
-        <div className="overflow-x-auto">
+        {paginationLoading ? (
+              <div className="flex justify-center">
+                  <ClipLoader color="#607D8B" size={30} />
+              </div>
+        ) : (
+                  <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex justify-center items-center ">
                 <FadeLoader color="#607D8B" size={50} {...(undefined as any)}/>
@@ -131,6 +143,8 @@ function FeedbackTable() {
             </table>
           )}
         </div>
+        )}
+
       </CardBody>
 
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>

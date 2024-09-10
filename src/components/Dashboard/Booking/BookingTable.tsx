@@ -47,7 +47,7 @@ function BookingTable() {
   }, [delSuccess, delError]);
 
   useEffect(() => {
-    setPaginationLoading(false); // Stop pagination loading when bookings are fetched
+    setPaginationLoading(false); 
   }, [bookings]);
 
   if (isLoading) {
