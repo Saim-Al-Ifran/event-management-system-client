@@ -14,6 +14,7 @@ import {
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
+import { useGetAllEventsQuery } from "../../../features/Events/eventsApi";
 
 const TABLE_HEAD = ["Image", "Title", "Status", "Location","Price", "Actions"];
 
@@ -47,6 +48,9 @@ const TABLE_ROWS = [
 ];
 
 function EventTable() {
+  const {data:events} = useGetAllEventsQuery();
+  console.log(events);
+  
   return (
     <Card className="users-table-card" {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>

@@ -67,3 +67,27 @@ export interface BookingResponse {
 }
 
 export interface GetBookingsParams extends PaginationParams {}
+
+export interface Event{
+  _id: string;
+  title: string;
+  description: string;
+  date: string;
+  capacity: number;
+  image: string;
+  category:string;
+  price: number;
+  status: string;
+  author: string;
+}
+
+export interface EventResponse{
+  data: Event[];
+  totalRecords: number;
+  totalPages: number;
+  prevPage: number | null;
+  nextPage: number | null;
+  page: number;
+}
+
+export interface GetEventsParams extends PaginationParams{}
