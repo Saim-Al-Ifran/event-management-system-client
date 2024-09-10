@@ -10,10 +10,11 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css";
-import { useGetAllBookingsQuery } from "../../../features/Bookings/bookingsApi";
-import { FadeLoader } from "react-spinners";
+import { useDeleteRequestedBookingMutation, useGetAllBookingsQuery } from "../../../features/Bookings/bookingsApi";
+import { ClipLoader, FadeLoader } from "react-spinners";
 import { Booking } from "../../../types/api-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const TABLE_HEAD = ["Image", "Title", "Location", "Price", "Delete Request"];
 
@@ -21,11 +22,33 @@ function BookingTable() {
   const [page, setPage] = useState(1);
   const limit = 5;
   const [searchQuery, setSearchQuery] = useState("");
+  const [deletingBookingId, setDeletingBookingId] = useState<string | null>(null);
+  const [paginationLoading, setPaginationLoading] = useState(false); // New pagination loading state
   const { data: bookings, isLoading, isError } = useGetAllBookingsQuery({
     page,
     limit,
     search: searchQuery,
   });
+  const [deleteRequestedBooking,{isSuccess:delSuccess,isError:delError,error}] = useDeleteRequestedBookingMutation()
+
+  useEffect(()=>{
+    if(delSuccess){
+      Swal.fire({
+        title: '<span>Deleted!</span>',
+        html: '<span>The booking data has been deleted.</span>',
+        icon: 'success',
+        confirmButtonColor:'#607D8B'
+      });
+    }
+    if(delError){
+      console.log(error);
+      Swal.fire('Error!', 'Failed to delete the booking.', 'error');
+    }
+  }, [delSuccess, delError]);
+
+  useEffect(() => {
+    setPaginationLoading(false); // Stop pagination loading when bookings are fetched
+  }, [bookings]);
 
   if (isLoading) {
     return (
@@ -40,19 +63,35 @@ function BookingTable() {
   }
 
   const handlePrevious = () => {
-    if (page > 1) setPage(page - 1);
+    if (page > 1) {
+      setPaginationLoading(true); // Start pagination loading
+      setPage(page - 1);
+    }
   };
 
   const handleNext = () => {
     if (bookings?.totalPages && page < bookings.totalPages) {
+      setPaginationLoading(true); // Start pagination loading
       setPage(page + 1);
     }
   };
 
-  const handleRequestDelete = (bookingId: string, requestToDelete: boolean) => {
-    // Add your logic here to handle the request for deletion
-    console.log(`Booking ID: ${bookingId}, Request to Delete: ${requestToDelete}`);
-    // This could trigger an API call to update the booking's requestToDelete status
+  const handleRequestDelete = async (bookingId: string, requestToDelete: boolean) => {
+    if (requestToDelete) {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#607D8B',
+        cancelButtonColor: '#F44336',
+        confirmButtonText: 'Yes, delete it!'
+      });
+      if (result.isConfirmed) {  
+        setDeletingBookingId(bookingId);
+        await deleteRequestedBooking(bookingId);
+      }
+    } 
   };
 
   return (
@@ -80,69 +119,80 @@ function BookingTable() {
       </CardHeader>
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
-        <div className="table-container">
-          <table className="users-table w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                      {...(undefined as any)}
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {bookings?.data?.map(({ event, _id, requestToDelete }: Booking, index: number) => {
-                const isLast = index === bookings.data.length - 1;
-                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={_id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar src={event?.image} alt={event?.title} size="md" {...(undefined as any)} />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex flex-col">
-                        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-                          {event?.title}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-                        {event?.location}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-                        ${event?.price.toFixed(2)}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Button
-                        color={requestToDelete ? "red" : "green"}
-                        size="sm"
-                        onClick={() => handleRequestDelete(_id, requestToDelete)}
+        {paginationLoading ? (
+          <div className="flex justify-center">
+            <ClipLoader color="#607D8B" size={30} />
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="users-table w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
                         {...(undefined as any)}
                       >
-                        {requestToDelete ? "Delete Requested" : "Active"}
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {bookings?.data?.map(({ event, _id, requestToDelete }: Booking, index: number) => {
+                  const isLast = index === bookings.data.length - 1;
+                  const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+
+                  return (
+                    <tr key={_id}>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Avatar src={event?.image} alt={event?.title} size="md" {...(undefined as any)} />
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex flex-col">
+                          <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
+                            {event?.title}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
+                          {event?.location}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
+                          ${event?.price.toFixed(2)}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Button
+                          color={requestToDelete ? "red" : "green"}
+                          size="sm"
+                          onClick={() => handleRequestDelete(_id, requestToDelete)}
+                          disabled={deletingBookingId === _id}
+                          {...(undefined as any)}
+                        >
+                          {deletingBookingId === _id ? (
+                            <span><ClipLoader color="white" size={15} /></span>
+                          ) : (
+                            requestToDelete ? "Delete Requested" : "Active"
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardBody>
 
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
@@ -153,9 +203,9 @@ function BookingTable() {
           <Button
             variant="outlined"
             size="sm"
-            {...(undefined as any)}
             onClick={handlePrevious}
-            disabled={page === 1}
+            disabled={page === 1 || paginationLoading}
+            {...(undefined as any)}
           >
             Previous
           </Button>
@@ -163,7 +213,7 @@ function BookingTable() {
             variant="outlined"
             size="sm"
             onClick={handleNext}
-            disabled={page === bookings?.totalPages}
+            disabled={page === bookings?.totalPages || paginationLoading}
             {...(undefined as any)}
           >
             Next
