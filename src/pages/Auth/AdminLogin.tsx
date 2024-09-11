@@ -11,7 +11,7 @@ const AdminLogin: React.FC = () => {
  
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
-  const [adminLogin,{isError,error,isSuccess}] = useAdminLoginMutation();
+  const [adminLogin,{isError,error,isSuccess,isLoading}] = useAdminLoginMutation();
   const onSubmit: SubmitHandler<IFormInput> = data => {
      
     adminLogin({
@@ -86,7 +86,7 @@ const AdminLogin: React.FC = () => {
               className="flex justify-center w-full bg-blue-gray-700"
               {...(undefined as any)}
             >
-              Log In
+              {isLoading ? 'Logging...':'Log In'}
             </Button>
           </div>
         </form>

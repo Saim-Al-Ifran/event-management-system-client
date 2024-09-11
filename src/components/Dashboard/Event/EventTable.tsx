@@ -6,89 +6,142 @@ import {
   Typography,
   Button,
   CardBody,
-   Chip,
+  Chip,
   CardFooter,
   Tabs,
   Avatar,
   Tooltip,
 } from "@material-tailwind/react";
-import "../../../style/responsive.Table.css"; 
+import "../../../style/responsive.Table.css";
 import { NavLink } from "react-router-dom";
-import { useGetAllEventsQuery } from "../../../features/Events/eventsApi";
+import { useDeleteEventMutation, useGetAllEventsQuery } from "../../../features/Events/eventsApi";
+import {  useEffect, useState } from "react";
+import { ClipLoader, FadeLoader } from "react-spinners";
+import Swal from "sweetalert2";
 
-const TABLE_HEAD = ["Image", "Title", "Status", "Location","Price", "Actions"];
-
-const TABLE_ROWS = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    title: "Drink-event",
-    date: "23/04/18",
-    location:"Aftab",
-    status:'pending',
-    price:700,
-    
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    title: "Drink-event",
-    date: "23/04/18",
-    location:"amtoli",
-    status:'active',
-    price:1000
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    title: "Drink-event",
-    date: "23/04/18",
-    location:"Natun bazar",
-    status:'completed',
-    price:900
-  },
- 
-];
+const TABLE_HEAD = ["Image", "Title", "Status", "Location", "Price", "Actions"];
 
 function EventTable() {
-  const {data:events} = useGetAllEventsQuery();
-  console.log(events);
   
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [paginationLoading, setPaginationLoading] = useState(false);
+  const limit = 3;
+  const { data: events, isLoading } = useGetAllEventsQuery({page,limit,search:searchQuery});
+  const [deleteEvent,{isError:delError,isSuccess:delSuccess,error}] = useDeleteEventMutation();
+  const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+ 
+  useEffect(()=>{
+    if(delSuccess){
+
+     Swal.fire({
+      title: '<span>Deleted!</span>',
+      html: '<span>The event has been deleted.</span>',
+      icon: 'success',
+      confirmButtonColor:'#607D8B'
+    });
+
+    }
+
+    if(delError){
+      Swal.fire(
+        'Error!',
+        `${error?.data?.message}`,
+        'error'
+      );
+   }
+
+},[delSuccess,delError]);
+
+
+  useEffect(() => {
+    setPaginationLoading(false);  
+ }, [events]);
+
+   
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FadeLoader color="#607D8B" size={50} {...(undefined as any)}/>
+      </div>
+    );
+  }
+
+
+  const handlePrevious = () => {
+    setPaginationLoading(true);
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (events?.totalPages && page < events?.totalPages) {
+      setPaginationLoading(true);
+      setPage(page + 1);
+    }
+  };
+
+  const handleDeleteEvent = async (id:string)=>{
+    
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#607D8B',
+      cancelButtonColor: '#F44336',
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if(result.isConfirmed){  
+      setDeletingEventId(id)
+      await deleteEvent(id)
+    
+    }
+}
+
+
   return (
-    <Card className="users-table-card" {...(undefined as any)}>
-      <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
+    <Card className="users-table-card"  {...(undefined as any)}>
+      <CardHeader floated={false} shadow={false} className="rounded-none"  {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
-            <Typography variant="h5" color="blue-gray"{...(undefined as any)}>
-              Events list
+            <Typography variant="h5" color="blue-gray"  {...(undefined as any)}>
+              Events List
             </Typography>
-            <Typography color="gray" className="mt-1 font-normal" {...(undefined as any)}>
+            <Typography color="gray" className="mt-1 font-normal"  {...(undefined as any)}>
               See information about all events
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <NavLink to="/dashboard/event/add">
-              <Button className="flex items-center gap-3" size="sm" {...(undefined as any)}>
-              <i className="fa-regular fa-calendar-plus"></i> Add Event
+              <Button className="flex items-center gap-3" size="sm"  {...(undefined as any)}>
+                <i className="fa-regular fa-calendar-plus"></i> Add Event
               </Button>
             </NavLink>
-
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <Tabs value="all" className="w-full md:w-max">
-   
-          </Tabs>
+          <Tabs value="all" className="w-full md:w-max"></Tabs>
           <div className="w-full md:w-72 mb-4">
             <Input
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               {...(undefined as any)}
             />
           </div>
         </div>
       </CardHeader>
 
-      <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
+      <CardBody className="px-0 pt-0 pb-2"  {...(undefined as any)}>
         <div className="table-container">
-          <table className="users-table w-full min-w-max table-auto text-left">
+          {paginationLoading ? (
+                <div className="flex justify-center">
+                      <ClipLoader color="#607D8B" size={30} />
+                </div>
+          ) : (
+            <table className="users-table w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -109,120 +162,138 @@ function EventTable() {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(
-                ({ img,title,date,location,price,status }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
+              {events?.data?.map((event: any, index: number) => {
+                const isLast = index === events.data.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
 
-                  return (
-                    <tr key={index}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar src={img} alt={name} size="md"  {...(undefined as any)}/>
-    
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                            {...(undefined as any)}
-                          >
-                            {title}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="gray"
-                            className="font-normal opacity-70"
-                            {...(undefined as any)}
-                          >
-                            {date}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <Chip
-                          variant="gradient"
-                          color={
-                            status === "active"
-                              ? "green"
-                              : status === "completed"
-                              ? "yellow"
-                              : "blue-gray"
-                          }
-                          value={status}
-                          className="w-max"
-                        />
-                      </td>
-                      <td className={classes}>
+                return (
+                  <tr key={event._id}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <Avatar src={event.image} alt={event.title} size="md"  {...(undefined as any)} />
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                           {...(undefined as any)}
                         >
-                          {location}
+                          {event.title}
                         </Typography>
-                      </td>
-                      <td className={classes}>
-                            <Typography 
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                              {...(undefined as any)}
-                            >
-                                 {price}
-                            </Typography>
-                      </td>
-                      <td className={classes}>
-                        <NavLink to="/dashboard/event/edit/1">
-                            <Tooltip content="Edit User">
-                                <Button 
-                                  color="blue-gray"
-                                  variant="filled"
-                                  {...(undefined as any)}
-                                  size="md"
-                                  className="mr-2"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </Button>
-                            </Tooltip>
-                        </NavLink>
-
-                        <Tooltip content="Delete User">
-                            <Button 
-                              color="red"
-                              {...(undefined as any)}
-                              size="md"
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </Button>
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="font-normal opacity-70"
+                          {...(undefined as any)}
+                        >
+                          {new Date(event.date).toLocaleDateString()}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <Chip
+                        variant="gradient"
+                        color={
+                          event.status === "active"
+                            ? "green"
+                            : event.status === "completed"
+                            ? "yellow"
+                            : "blue-gray"
+                        }
+                        value={event.status}
+                        className="w-max"
+                      />
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                        {...(undefined as any)}
+                      >
+                        {event.location}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                        {...(undefined as any)}
+                      >
+                        ${event.price}
+                      </Typography>
+                    </td>
+ 
+                    <td className={classes}>
+                      <NavLink to={`/dashboard/event/edit/${event._id}`}>
+                        <Tooltip content="Edit Event">
+                          <Button
+                            color="blue-gray"
+                            variant="filled"
+                            size="md"
+                            className="mr-2"
+                            {...(undefined as any)}
+                          >
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </Button>
                         </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
+                      </NavLink>
+
+                      <Tooltip content="Delete Event">
+                        <Button
+                          color="red"
+                          size="md"
+                          {...(undefined as any)}
+                          onClick={()=>handleDeleteEvent(event._id)}
+                          disabled={deletingEventId === event._id}
+                        >
+                           {deletingEventId=== event._id? (
+                              <span><ClipLoader color="white" size={15} /></span>
+                            ) : (
+                              <i className="fa-solid fa-trash"></i>
+                            )}
+                        </Button>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
-          </table>
+            </table>
+          )}
+
         </div>
       </CardBody>
 
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
-        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-          Page 1 of 10
+      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4"  {...(undefined as any)}>
+        <Typography variant="small" color="blue-gray" className="font-normal"  {...(undefined as any)}>
+          Page {page} of {events?.totalPages}
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
-            Previous
-          </Button>
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
-            Next
-          </Button>
+          <Button
+              variant="outlined"
+              size="sm"
+              onClick={handlePrevious}
+              disabled={page === 1}
+              {...(undefined as any)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={handleNext}
+              disabled={page === events?.totalPages}
+              {...(undefined as any)}
+            >
+              Next
+            </Button>
         </div>
       </CardFooter>
     </Card>
