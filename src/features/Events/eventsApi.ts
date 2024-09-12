@@ -15,6 +15,13 @@ const eventsApi = apiSlice.injectEndpoints({
               },
               providesTags:['Events']
         }),
+        getSingleEvent:builder.query<Event,string>({
+            query:(id)=> `/event-administration/events/${id}`,
+            providesTags: (_result,_error,id)=>[
+                'Events',
+                {type:'Event',id}
+              ]
+        }),
         createEvent:builder.mutation<Event,void>({
              query:(data)=>({
                  url:'/event-administration/events',
@@ -57,6 +64,7 @@ const eventsApi = apiSlice.injectEndpoints({
 
 export const {
     useGetAllEventsQuery,
+    useGetSingleEventQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
     useDeleteEventMutation,
