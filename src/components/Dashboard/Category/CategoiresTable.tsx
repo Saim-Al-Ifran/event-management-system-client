@@ -139,7 +139,7 @@ function CategoriesTable() {
                 <ClipLoader color="#607D8B" size={30} />
             </div>
         ):(
-                <div className="table-container flex justify-center items-center">
+          <div className="table-container flex justify-center items-center">
           {noCategoriesFound ? (
             <div className="text-center p-4">
               <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 

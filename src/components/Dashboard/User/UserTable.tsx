@@ -15,58 +15,61 @@ import {
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
+import { useGetUsersQuery } from "../../../features/user/userApi";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { ClipLoader, FadeLoader } from "react-spinners";
+import { RootState } from "../../../app/store";
 
-const TABLE_HEAD = ["Member", "Function", "Status", "Employed", "Actions"];
+const TABLE_HEAD = ["Member", "Role", "Status", "Number", "Actions"];
 
-const TABLE_ROWS = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    email: "john@creative-tim.com",
-    job: "Manager",
-    org: "Organization",
-    online: true,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    email: "alexa@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: false,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    email: "laurent@creative-tim.com",
-    job: "Executive",
-    org: "Projects",
-    online: false,
-    date: "19/09/17",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-    name: "Michael Levi",
-    email: "michael@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: true,
-    date: "24/12/08",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-    name: "Richard Gran",
-    email: "richard@creative-tim.com",
-    job: "Manager",
-    org: "Executive",
-    online: false,
-    date: "04/10/21",
-  },
-];
+ 
 
 function UsersTable() {
+  
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const limit = 10;
+  const [paginationLoading, setPaginationLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const getUser = useSelector((state: RootState)=>state.auth);
+  const {data:users,isError,error,isLoading} = useGetUsersQuery({
+     role: getUser?.user?.role,
+     entity: getUser?.user?.role === 'super-admin' ? 'entities' : 'users',
+     page,
+     limit,
+     search:searchQuery,
+  });
+
+  useEffect(() => {
+    setPaginationLoading(false);  
+    setSearchLoading(false);
+  }, [users]);
+
+  const noUsersFound = isError && error?.status === 404 && error?.data?.message === "No users found";
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <FadeLoader color="#607D8B" size={50} {...(undefined as any)}/>
+      </div>
+    );
+  }
+  if (isError && !noUsersFound) return <div>Error fetching users</div>;
+
+  const handlePrevious = () => {
+    setPaginationLoading(true);
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (users?.users?.totalPages && page < users?.users?.totalPages) {
+      setPaginationLoading(true);
+      setPage(page + 1);
+    }
+  };
+  console.log(users);
+  
+
   return (
     <Card className="users-table-card" {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none" {...(undefined as any)}>
@@ -97,13 +100,31 @@ function UsersTable() {
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
               {...(undefined as any)}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setSearchLoading(true)
+              }}
             />
           </div>
         </div>
       </CardHeader>
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
+        {paginationLoading || (searchLoading && !noUsersFound) ? (
+           <div className="flex justify-center">
+               <ClipLoader color="#607D8B" size={30} />
+           </div>
+        ):(      
         <div className="table-container">
+          {noUsersFound ? (
+            <div className="text-center p-4">
+              <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 
+                No users found for the search term "{searchQuery}"
+              </Typography>
+           </div>
+          ):(
+        
           <table className="users-table w-full min-w-max table-auto text-left">
             <thead>
               <tr>
@@ -125,18 +146,18 @@ function UsersTable() {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(
-                ({ img, name, email, job, org, online, date }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
+              {users?.users?.data.map(
+                ({ image, username, email, role, isBlocked, phoneNumber }:any, index:number) => {
+                  const isLast = index === users?.users?.data.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={name}>
+                    <tr key={index}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
-                          <Avatar src={img} alt={name} size="sm"  {...(undefined as any)}/>
+                          <Avatar src={image} alt={username} size="sm"  {...(undefined as any)}/>
                           <div>
                             <Typography
                               variant="small"
@@ -144,7 +165,7 @@ function UsersTable() {
                               className="font-normal"
                               {...(undefined as any)}
                             >
-                              {name}
+                              {username}
                             </Typography>
                             <Typography
                               variant="small"
@@ -165,23 +186,16 @@ function UsersTable() {
                             className="font-normal"
                             {...(undefined as any)}
                           >
-                            {job}
+                            {role}
                           </Typography>
-                          <Typography
-                            variant="small"
-                            color="gray"
-                            className="font-normal opacity-70"
-                            {...(undefined as any)}
-                          >
-                            {org}
-                          </Typography>
+    
                         </div>
                       </td>
                       <td className={classes}>
                         <Chip
                           variant="gradient"
-                          color={online ? "green" : "blue-gray"}
-                          value={online ? "Online" : "Offline"}
+                          color={isBlocked ? "red" : "green"}
+                          value={isBlocked ? "Blocked" : "Active"}
                           className="w-max"
                         />
                       </td>
@@ -192,7 +206,7 @@ function UsersTable() {
                           className="font-normal"
                           {...(undefined as any)}
                         >
-                          {date}
+                          {phoneNumber}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -226,22 +240,40 @@ function UsersTable() {
               )}
             </tbody>
           </table>
-        </div>
-      </CardBody>
+          )}
 
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
+        </div>
+        )}
+
+      </CardBody>
+{!noUsersFound && (
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
         <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-          Page 1 of 10
+          Page {page} of {users?.users?.totalPages|| 1}
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
+          <Button
+           variant="outlined"
+           size="sm"
+           onClick={handlePrevious}
+           disabled={page === 1}
+           {...(undefined as any)}
+          >
             Previous
           </Button>
-          <Button variant="outlined" size="sm" {...(undefined as any)}>
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={handleNext}
+            disabled={page === users?.users?.totalPages}
+            {...(undefined as any)}
+          >
             Next
           </Button>
         </div>
       </CardFooter>
+)}
+
     </Card>
   );
 }
