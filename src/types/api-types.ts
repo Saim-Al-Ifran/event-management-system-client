@@ -1,3 +1,5 @@
+import { User } from "./types";
+
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -91,3 +93,36 @@ export interface EventResponse{
 }
 
 export interface GetEventsParams extends PaginationParams{}
+
+export interface UserRequest{
+     id:string;
+     role:"admin" | "super-admin";
+     entity:"entities" | "users";
+     data:User;
+}
+
+export interface UserUpdateResponse{
+      message:string;
+      user:User
+}
+export interface AllUserResponse{
+  message:string;
+  data:User[];
+}
+
+export interface GetUsersParams extends PaginationParams{
+  role:"admin" | "super-admin";
+  entity:"entities" | "users";
+}
+
+export interface CreateUserResponse{
+   message:string;
+   user:User;  
+}
+
+export interface UserDeleteRequest{
+  id:string;
+  role:"admin" | "super-admin";
+  entity:"entities" | "users";
+  
+}

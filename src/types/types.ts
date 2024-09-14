@@ -44,5 +44,15 @@ export interface SettingsState {
   footerDescription: string;
   socialLinks: SocialLinks;
 }
+
+export interface User{
+  _id:string;
+  image:string;
+  username:string;
+  email:string;
+  role:string;
+  isBlocked:boolean;
+  phoneNumber:string
+}
   
  

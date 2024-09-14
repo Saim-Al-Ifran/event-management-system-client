@@ -15,11 +15,13 @@ import {
 } from "@material-tailwind/react";
 import "../../../style/responsive.Table.css"; 
 import { NavLink } from "react-router-dom";
-import { useGetUsersQuery } from "../../../features/user/userApi";
+import { useDeleteUserMutation, useGetUsersQuery } from "../../../features/user/userApi";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ClipLoader, FadeLoader } from "react-spinners";
 import { RootState } from "../../../app/store";
+import Swal from "sweetalert2";
+import { User } from "../../../types/types";
 
 const TABLE_HEAD = ["Member", "Role", "Status", "Number", "Actions"];
 
@@ -32,14 +34,36 @@ function UsersTable() {
   const limit = 10;
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const getUser = useSelector((state: RootState)=>state.auth);
+  const {role} = getUser?.user;
+  const entity = role === 'super-admin' ? 'entities' : 'users';
   const {data:users,isError,error,isLoading} = useGetUsersQuery({
-     role: getUser?.user?.role,
-     entity: getUser?.user?.role === 'super-admin' ? 'entities' : 'users',
+     role: role,
+     entity: entity,
      page,
      limit,
      search:searchQuery,
   });
+ const [deleteUser,{isSuccess:isDelSuccess,isError:isDelError}]= useDeleteUserMutation();
+  
+  useEffect(()=>{
+        if(isDelSuccess){
+          Swal.fire({
+            title: '<span>Deleted!</span>',
+            html: '<span>The data has been deleted succcessfully.</span>',
+            icon: 'success',
+            confirmButtonColor:'#607D8B'
+          });
+        }
+        if(isDelError){
+          Swal.fire(
+            'Error!',
+            'Failed to delete the user',
+            'error'
+          );
+        }
+  },[isDelSuccess,isDelError])
 
   useEffect(() => {
     setPaginationLoading(false);  
@@ -67,7 +91,22 @@ function UsersTable() {
       setPage(page + 1);
     }
   };
-  console.log(users);
+ 
+  const handleDeleteUser = async (id:string)=>{
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#607D8B',
+      cancelButtonColor: '#F44336',
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if(result.isConfirmed){
+      setDeletingUserId(id);
+      await deleteUser({role,entity,id})
+    }
+  }
   
 
   return (
@@ -147,7 +186,7 @@ function UsersTable() {
             </thead>
             <tbody>
               {users?.users?.data.map(
-                ({ image, username, email, role, isBlocked, phoneNumber }:any, index:number) => {
+                ({_id,image, username, email, role, isBlocked, phoneNumber }:User, index:number) => {
                   const isLast = index === users?.users?.data.length - 1;
                   const classes = isLast
                     ? "p-4"
@@ -210,7 +249,7 @@ function UsersTable() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <NavLink to="/dashboard/users/edit/1">
+                        <NavLink to={`/dashboard/users/edit/${_id}`}>
                             <Tooltip content="Edit User">
                                 <Button 
                                   color="blue-gray"
@@ -229,8 +268,14 @@ function UsersTable() {
                               color="red"
                               {...(undefined as any)}
                               size="md"
+                              onClick={()=>handleDeleteUser(_id)}
+                              disabled={deletingUserId === _id }
                             >
+                            {deletingUserId === _id ? (
+                              <span><ClipLoader color="white" size={15} /></span>
+                            ) : (
                               <i className="fa-solid fa-trash"></i>
+                            )}
                             </Button>
                         </Tooltip>
                       </td>
@@ -246,7 +291,7 @@ function UsersTable() {
         )}
 
       </CardBody>
-{!noUsersFound && (
+      {!noUsersFound && (
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
         <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
           Page {page} of {users?.users?.totalPages|| 1}

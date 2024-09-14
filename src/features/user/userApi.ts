@@ -1,8 +1,9 @@
 import { apiSlice } from "../api/apiSlice";
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { EndpointBuilder } from '@reduxjs/toolkit/query';
+import { AllUserResponse, CreateUserResponse, GetUsersParams, UserDeleteRequest, UserRequest, UserUpdateResponse } from "../../types/api-types";
 
-// Helper function to build the URL based on role, pagination, and search
+
 const getUrlForRole = (
     role: 'admin' | 'super-admin', 
     entity: 'users' | 'entities', 
@@ -13,7 +14,6 @@ const getUrlForRole = (
 ) => {
     let baseUrl = `/event-administration`;
 
-    // Construct URL based on role
     if (role === 'admin') {
         baseUrl += `/${role}/${entity}`;
     }
@@ -21,11 +21,9 @@ const getUrlForRole = (
         baseUrl += `/${entity}`;
     }
 
-    // Add query parameters: pagination and search
     const paginationParams = page && limit ? `page=${page}&limit=${limit}` : '';
     const searchParams = search ? `search=${encodeURIComponent(search)}` : '';
-    
-    // Combine query parameters if both are present
+
     const queryParams = [paginationParams, searchParams].filter(Boolean).join('&');
     const finalUrl = id ? `${baseUrl}/${id}` : `${baseUrl}?${queryParams}`;
     
@@ -36,35 +34,43 @@ const getUrlForRole = (
 const userApi = apiSlice.injectEndpoints({
     endpoints: (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
         
-        // Generalized get users query with pagination and search
-        getUsers: builder.query({
+        getUsers: builder.query<AllUserResponse,GetUsersParams>({
             query: ({ role, entity, page = 1, limit = 10, search = '' }) => 
                 getUrlForRole(role, entity, undefined, page, limit, search),
+            providesTags:['Users']
         }),
 
-        createUser: builder.mutation({
+        createUser: builder.mutation<CreateUserResponse,UserRequest>({
             query: ({ role, entity, data }) => ({
                 url: getUrlForRole(role, entity),
                 method: 'POST',
                 body: data
-            })
+            }),
+            invalidatesTags: ['Users']
         }),
 
-        updateUser: builder.mutation({
+        updateUser: builder.mutation<UserUpdateResponse,UserRequest>({
             query: ({ role, entity, id, data }) => ({
                 url: getUrlForRole(role, entity, id),
                 method: 'PUT',
                 body: data
-            })
+            }),
+            invalidatesTags: (_result,_error,{id})=>[
+                'Users',
+                { type: 'Event', id },
+            ]
+
         }),
 
-        deleteUser: builder.mutation({
+        deleteUser: builder.mutation<void, UserDeleteRequest>({
             query: ({ role, entity, id }) => ({
                 url: getUrlForRole(role, entity, id),
                 method: 'DELETE'
-            })
+            }),
+            invalidatesTags:['Users']
         })
-    })
+    }),
+    tagTypes:['Users','User']
 });
 
 export const {
