@@ -25,9 +25,10 @@ function EventTable() {
   
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
   const [paginationLoading, setPaginationLoading] = useState(false);
   const limit = 3;
-  const { data: events, isLoading } = useGetAllEventsQuery({page,limit,search:searchQuery});
+  const { data: events, isLoading,isError,error:fetchError } = useGetAllEventsQuery({page,limit,search:searchQuery});
   const [deleteEvent,{isError:delError,isSuccess:delSuccess,error}] = useDeleteEventMutation();
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
  
@@ -56,9 +57,11 @@ function EventTable() {
 
   useEffect(() => {
     setPaginationLoading(false);  
+    setSearchLoading(false);
  }, [events]);
 
-   
+ const noEventsFound = isError && fetchError?.status === 404 && fetchError?.data?.message === "No events found!!";
+ 
 
   if (isLoading) {
     return (
@@ -127,175 +130,193 @@ function EventTable() {
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setSearchLoading(true)
+              }}
               {...(undefined as any)}
             />
           </div>
         </div>
       </CardHeader>
-
+     
       <CardBody className="px-0 pt-0 pb-2"  {...(undefined as any)}>
         <div className="table-container">
-          {paginationLoading ? (
+          {paginationLoading || (searchLoading && !noEventsFound) ? (
                 <div className="flex justify-center">
                       <ClipLoader color="#607D8B" size={30} />
                 </div>
           ) : (
-            <table className="users-table w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                      {...(undefined as any)}
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {events?.data?.map((event: any, index: number) => {
-                const isLast = index === events.data.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={event._id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar src={event.image} alt={event.title} size="md"  {...(undefined as any)} />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex flex-col">
+            <div className="table-container flex justify-center items-center">
+              {noEventsFound? (
+                  <div className="text-center p-4">
+                          <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 
+                            No events found for the search term "{searchQuery}"
+                          </Typography>
+                  </div>
+              ):(
+                               <table className="users-table w-full min-w-max table-auto text-left">
+                <thead>
+                  <tr>
+                    {TABLE_HEAD.map((head) => (
+                      <th
+                        key={head}
+                        className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                      >
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-normal"
+                          className="font-normal leading-none opacity-70"
                           {...(undefined as any)}
                         >
-                          {event.title}
+                          {head}
                         </Typography>
-                        <Typography
-                          variant="small"
-                          color="gray"
-                          className="font-normal opacity-70"
-                          {...(undefined as any)}
-                        >
-                          {new Date(event.date).toLocaleDateString()}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Chip
-                        variant="gradient"
-                        color={
-                          event.status === "active"
-                            ? "green"
-                            : event.status === "completed"
-                            ? "yellow"
-                            : "blue-gray"
-                        }
-                        value={event.status}
-                        className="w-max"
-                      />
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                        {...(undefined as any)}
-                      >
-                        {event.location}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                        {...(undefined as any)}
-                      >
-                        ${event.price}
-                      </Typography>
-                    </td>
- 
-                    <td className={classes}>
-                      <NavLink to={`/dashboard/event/edit/${event._id}`}>
-                        <Tooltip content="Edit Event">
-                          <Button
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {events?.data?.map((event: any, index: number) => {
+                    const isLast = index === events.data.length - 1;
+                    const classes = isLast
+                      ? "p-4"
+                      : "p-4 border-b border-blue-gray-50";
+
+                    return (
+                      <tr key={event._id}>
+                        <td className={classes}>
+                          <div className="flex items-center gap-3">
+                            <Avatar src={event.image} alt={event.title} size="md"  {...(undefined as any)} />
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              {...(undefined as any)}
+                            >
+                              {event.title}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="gray"
+                              className="font-normal opacity-70"
+                              {...(undefined as any)}
+                            >
+                              {new Date(event.date).toLocaleDateString()}
+                            </Typography>
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <Chip
+                            variant="gradient"
+                            color={
+                              event.status === "active"
+                                ? "green"
+                                : event.status === "completed"
+                                ? "yellow"
+                                : "blue-gray"
+                            }
+                            value={event.status}
+                            className="w-max"
+                          />
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
                             color="blue-gray"
-                            variant="filled"
-                            size="md"
-                            className="mr-2"
+                            className="font-normal"
                             {...(undefined as any)}
                           >
-                            <i className="fa-solid fa-pen-to-square"></i>
-                          </Button>
-                        </Tooltip>
-                      </NavLink>
+                            {event.location}
+                          </Typography>
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                            {...(undefined as any)}
+                          >
+                            ${event.price}
+                          </Typography>
+                        </td>
+    
+                        <td className={classes}>
+                          <NavLink to={`/dashboard/event/edit/${event._id}`}>
+                            <Tooltip content="Edit Event">
+                              <Button
+                                color="blue-gray"
+                                variant="filled"
+                                size="md"
+                                className="mr-2"
+                                {...(undefined as any)}
+                              >
+                                <i className="fa-solid fa-pen-to-square"></i>
+                              </Button>
+                            </Tooltip>
+                          </NavLink>
 
-                      <Tooltip content="Delete Event">
-                        <Button
-                          color="red"
-                          size="md"
-                          {...(undefined as any)}
-                          onClick={()=>handleDeleteEvent(event._id)}
-                          disabled={deletingEventId === event._id}
-                        >
-                           {deletingEventId=== event._id? (
-                              <span><ClipLoader color="white" size={15} /></span>
-                            ) : (
-                              <i className="fa-solid fa-trash"></i>
-                            )}
-                        </Button>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            </table>
+                          <Tooltip content="Delete Event">
+                            <Button
+                              color="red"
+                              size="md"
+                              {...(undefined as any)}
+                              onClick={()=>handleDeleteEvent(event._id)}
+                              disabled={deletingEventId === event._id}
+                            >
+                              {deletingEventId=== event._id? (
+                                  <span><ClipLoader color="white" size={15} /></span>
+                                ) : (
+                                  <i className="fa-solid fa-trash"></i>
+                                )}
+                            </Button>
+                          </Tooltip>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                </table>
+              )}
+ 
+            </div>
+
           )}
 
         </div>
       </CardBody>
 
+   { !noEventsFound && (
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4"  {...(undefined as any)}>
-        <Typography variant="small" color="blue-gray" className="font-normal"  {...(undefined as any)}>
-          Page {page} of {events?.totalPages}
-        </Typography>
-        <div className="flex gap-2">
+      <Typography variant="small" color="blue-gray" className="font-normal"  {...(undefined as any)}>
+        Page {page} of {events?.totalPages}
+      </Typography>
+      <div className="flex gap-2">
+        <Button
+            variant="outlined"
+            size="sm"
+            onClick={handlePrevious}
+            disabled={page === 1}
+            {...(undefined as any)}
+          >
+            Previous
+          </Button>
           <Button
-              variant="outlined"
-              size="sm"
-              onClick={handlePrevious}
-              disabled={page === 1}
-              {...(undefined as any)}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outlined"
-              size="sm"
-              onClick={handleNext}
-              disabled={page === events?.totalPages}
-              {...(undefined as any)}
-            >
-              Next
-            </Button>
-        </div>
-      </CardFooter>
+            variant="outlined"
+            size="sm"
+            onClick={handleNext}
+            disabled={page === events?.totalPages}
+            {...(undefined as any)}
+          >
+            Next
+          </Button>
+      </div>
+    </CardFooter>
+   ) }  
+     
     </Card>
   );
 }

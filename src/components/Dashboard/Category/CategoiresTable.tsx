@@ -25,6 +25,7 @@ const TABLE_HEAD = ["Image", "Category Name", "Actions"];
 function CategoriesTable() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
   const [paginationLoading, setPaginationLoading] = useState(false);
   const limit = 3;
   const { data: categories, isLoading, isError, error } = useGetCategoriesQuery({ page, limit, search: searchQuery });
@@ -55,6 +56,7 @@ function CategoriesTable() {
 
   useEffect(() => {
      setPaginationLoading(false);  
+     setSearchLoading(false)
   }, [categories]);
 
 
@@ -126,7 +128,10 @@ function CategoriesTable() {
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) =>{
+                setSearchQuery(e.target.value)
+                setSearchLoading(true)
+              }}
               {...(undefined as any)}
             />
           </div>
@@ -134,7 +139,7 @@ function CategoriesTable() {
       </CardHeader>
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
-        {paginationLoading ? (
+        {paginationLoading || (searchLoading && !noCategoriesFound) ? (
             <div className="flex justify-center">
                 <ClipLoader color="#607D8B" size={30} />
             </div>

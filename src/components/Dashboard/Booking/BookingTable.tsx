@@ -23,8 +23,9 @@ function BookingTable() {
   const limit = 5;
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingBookingId, setDeletingBookingId] = useState<string | null>(null);
-  const [paginationLoading, setPaginationLoading] = useState(false); // New pagination loading state
-  const { data: bookings, isLoading, isError } = useGetAllBookingsQuery({
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [paginationLoading, setPaginationLoading] = useState(false);  
+  const { data: bookings, isLoading, isError,error:fetchError } = useGetAllBookingsQuery({
     page,
     limit,
     search: searchQuery,
@@ -48,6 +49,7 @@ function BookingTable() {
 
   useEffect(() => {
     setPaginationLoading(false); 
+    setSearchLoading(false);
   }, [bookings]);
 
   if (isLoading) {
@@ -58,20 +60,19 @@ function BookingTable() {
     );
   }
 
-  if (isError) {
-    return <div>Error fetching bookings.</div>;
-  }
+  const noBookingsFound = isError && fetchError?.status === 404 && fetchError?.data?.message === "No booking found!"
 
+  
   const handlePrevious = () => {
     if (page > 1) {
-      setPaginationLoading(true); // Start pagination loading
+      setPaginationLoading(true);  
       setPage(page - 1);
     }
   };
 
   const handleNext = () => {
     if (bookings?.totalPages && page < bookings.totalPages) {
-      setPaginationLoading(true); // Start pagination loading
+      setPaginationLoading(true); 
       setPage(page + 1);
     }
   };
@@ -111,7 +112,10 @@ function BookingTable() {
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setSearchLoading(true)
+              }}
               {...(undefined as any)}
             />
           </div>
@@ -119,13 +123,20 @@ function BookingTable() {
       </CardHeader>
 
       <CardBody className="px-0 pt-0 pb-2" {...(undefined as any)}>
-        {paginationLoading ? (
+        {paginationLoading || (searchLoading && !noBookingsFound ) ?(
           <div className="flex justify-center">
             <ClipLoader color="#607D8B" size={30} />
           </div>
         ) : (
           <div className="table-container">
-            <table className="users-table w-full min-w-max table-auto text-left">
+            {noBookingsFound  ? (
+                 <div className="text-center p-4">
+                       <Typography variant="h6" color="red" className="font-normal" {...(undefined as any)}> 
+                            No bookings data found for the search term "{searchQuery}"
+                       </Typography>
+                </div>
+            ) : (
+                        <table className="users-table w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head) => (
@@ -191,35 +202,39 @@ function BookingTable() {
                 })}
               </tbody>
             </table>
+            )}
+  
           </div>
         )}
       </CardBody>
-
+      {!noBookingsFound && (
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4" {...(undefined as any)}>
-        <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
-          Page {page} of {bookings?.totalPages || 1}
-        </Typography>
-        <div className="flex gap-2">
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={handlePrevious}
-            disabled={page === 1 || paginationLoading}
-            {...(undefined as any)}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={handleNext}
-            disabled={page === bookings?.totalPages || paginationLoading}
-            {...(undefined as any)}
-          >
-            Next
-          </Button>
-        </div>
-      </CardFooter>
+      <Typography variant="small" color="blue-gray" className="font-normal" {...(undefined as any)}>
+        Page {page} of {bookings?.totalPages || 1}
+      </Typography>
+      <div className="flex gap-2">
+        <Button
+          variant="outlined"
+          size="sm"
+          onClick={handlePrevious}
+          disabled={page === 1 || paginationLoading}
+          {...(undefined as any)}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outlined"
+          size="sm"
+          onClick={handleNext}
+          disabled={page === bookings?.totalPages || paginationLoading}
+          {...(undefined as any)}
+        >
+          Next
+        </Button>
+      </div>
+    </CardFooter>
+      ) }
+
     </Card>
   );
 }
