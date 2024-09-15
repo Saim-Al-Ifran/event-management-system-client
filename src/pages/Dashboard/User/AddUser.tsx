@@ -62,7 +62,8 @@ const AddUser: React.FC = () => {
       setPassword('');
       setRole('user');
     } catch (err) {
-   
+         console.log(err);
+         
     }
   };
 

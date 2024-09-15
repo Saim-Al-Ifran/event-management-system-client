@@ -126,3 +126,8 @@ export interface UserDeleteRequest{
   entity:"entities" | "users";
   
 }
+
+export interface SingleUserResponse{
+  message:string;
+  user:User;
+}

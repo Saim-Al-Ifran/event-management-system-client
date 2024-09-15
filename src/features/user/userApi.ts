@@ -1,7 +1,7 @@
 import { apiSlice } from "../api/apiSlice";
 import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { EndpointBuilder } from '@reduxjs/toolkit/query';
-import { AllUserResponse, CreateUserResponse, GetUsersParams, UserDeleteRequest, UserRequest, UserUpdateResponse } from "../../types/api-types";
+import { AllUserResponse,SingleUserResponse,CreateUserResponse, GetUsersParams, UserDeleteRequest, UserRequest, UserUpdateResponse } from "../../types/api-types";
 
 
 const getUrlForRole = (
@@ -18,16 +18,18 @@ const getUrlForRole = (
         baseUrl += `/${role}/${entity}`;
     }
     if (role === 'super-admin') {
+  //      console.log("base Url : ",baseUrl );
         baseUrl += `/${entity}`;
     }
-
+    
+    
     const paginationParams = page && limit ? `page=${page}&limit=${limit}` : '';
     const searchParams = search ? `search=${encodeURIComponent(search)}` : '';
 
     const queryParams = [paginationParams, searchParams].filter(Boolean).join('&');
     const finalUrl = id ? `${baseUrl}/${id}` : `${baseUrl}?${queryParams}`;
     
-    console.log("Constructed URL: ", finalUrl);
+   // console.log("Constructed URL: ", finalUrl);
     return finalUrl;
 };
 
@@ -38,6 +40,14 @@ const userApi = apiSlice.injectEndpoints({
             query: ({ role, entity, page = 1, limit = 10, search = '' }) => 
                 getUrlForRole(role, entity, undefined, page, limit, search),
             providesTags:['Users']
+        }),
+        getUserById: builder.query<SingleUserResponse,UserRequest>({
+            query: ({ role, entity, id }) => 
+                getUrlForRole(role, entity, id),
+          providesTags: (_result, _error, { id }) => [
+            'Users',
+            { type: 'User', id }
+          ]
         }),
 
         createUser: builder.mutation<CreateUserResponse,UserRequest>({
@@ -57,7 +67,7 @@ const userApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (_result,_error,{id})=>[
                 'Users',
-                { type: 'Event', id },
+                { type: 'User', id },
             ]
 
         }),
@@ -76,6 +86,7 @@ const userApi = apiSlice.injectEndpoints({
 export const {
     useGetUsersQuery,
     useCreateUserMutation,
+    useGetUserByIdQuery,
     useUpdateUserMutation,
     useDeleteUserMutation
 } = userApi;
