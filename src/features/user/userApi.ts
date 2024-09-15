@@ -18,7 +18,6 @@ const getUrlForRole = (
         baseUrl += `/${role}/${entity}`;
     }
     if (role === 'super-admin') {
-  //      console.log("base Url : ",baseUrl );
         baseUrl += `/${entity}`;
     }
     
@@ -28,8 +27,6 @@ const getUrlForRole = (
 
     const queryParams = [paginationParams, searchParams].filter(Boolean).join('&');
     const finalUrl = id ? `${baseUrl}/${id}` : `${baseUrl}?${queryParams}`;
-    
-   // console.log("Constructed URL: ", finalUrl);
     return finalUrl;
 };
 
