@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import TopNavBar from '../components/Dashboard/TopNavBar';
 import Sidebar from '../components/Dashboard/Sidebar';
-import { useGetDashboardDataQuery } from '../features/Dashboard/dashboardApi';
+ 
 
 const Dashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const {data:dashboardData} = useGetDashboardDataQuery()
-  console.log(dashboardData);
+
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

@@ -55,4 +55,16 @@ export interface User{
   phoneNumber:string
 }
   
- 
+export interface TriangleBarProps {
+  fill: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export  interface ChartDataPoint {
+  name: string;
+  uv: number;
+  [key: string]: any;
+}

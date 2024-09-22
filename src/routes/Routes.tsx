@@ -23,12 +23,15 @@ import Categories from '../pages/Categories/Categories';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import AdminOrSuperAdmin from './AdminOrSuperAdmin';
 import NotFound from '../components/shared/NotFound';
+import DashboardHome from '../pages/Dashboard/DashboardHome/DashboardHome';
  
 const AppRouter = () => {
   return (
     <>
        <Router>
+        
         <Routes>
+         
              <Route path='/' element={<Main/>}>
                       <Route index element={<Home/>} />
                       <Route path='/events' element={<Events/>} />
@@ -44,6 +47,7 @@ const AppRouter = () => {
                     </AdminOrSuperAdmin>
                      
                 }>
+                        <Route index element={<DashboardHome/>} />
                         <Route path="users/add" element={<AddUser/>}/>
                         <Route path="users/edit/:id" element={<EditUser/>}/>
                         <Route path="users/" element={<AllUsers/>}/>
@@ -60,7 +64,7 @@ const AppRouter = () => {
                <Route path='/admin/login' element={<AdminLogin/>}/>
                <Route path='/login' element={<UserLogin/>}/>
                <Route path='/register' element={<UserRegister/>}/>
-               <Route path="*" element={<NotFound/>} />
+               
           </Routes>
        </Router>
     </>
