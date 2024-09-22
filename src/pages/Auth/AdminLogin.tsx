@@ -85,6 +85,7 @@ const AdminLogin: React.FC = () => {
               type="submit"
               className="flex justify-center w-full bg-blue-gray-700"
               {...(undefined as any)}
+              disabled={isLoading}
             >
               {isLoading ? 'Logging...':'Log In'}
             </Button>
