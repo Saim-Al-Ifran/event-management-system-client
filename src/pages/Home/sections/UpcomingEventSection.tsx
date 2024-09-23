@@ -4,7 +4,7 @@ import EventCard from '../../../components/Events/EventCard';
 import { Link } from 'react-router-dom';
 import { useGetAllEventsQuery } from '../../../features/Events/eventsApi';
 
-// EventCardSkeleton component for loading state
+// Skeleton component for loading state
 const EventCardSkeleton: React.FC = () => (
   <div className="animate-pulse flex flex-col md:flex-row items-center mb-6">
     <div className="h-48 w-full md:w-1/4 bg-gray-300"></div>
@@ -17,6 +17,7 @@ const EventCardSkeleton: React.FC = () => (
   </div>
 );
 
+// Helper function to format date parts
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
   const date = eventDate.getDate().toString().padStart(2, '0');
@@ -26,25 +27,15 @@ const formatDateParts = (dateString: string) => {
   return { date, month, year, time };
 };
 
-const LatestEventsSection: React.FC = () => {
-  const { data: EventData, isLoading, isError } = useGetAllEventsQuery();
-
-  if (isError) {
-    return (
-      <div className="container mx-auto my-12 px-4">
-        <Typography variant="h6" className="text-center text-red-500" {...(undefined as any)}>
-          Error loading events. Please try again later.
-        </Typography>
-      </div>
-    );
-  }
+const UpcomingEventSection: React.FC = () => {
+  const { data: EventData, isLoading } = useGetAllEventsQuery();
 
   return (
     <div className="container mx-auto my-12 px-4">
       <div className="flex items-center justify-between mb-8">
         <Typography variant="h2" className="text-3xl font-bold flex items-center" {...(undefined as any)}>
           <span className="inline-block w-1 h-8 mr-2 bg-[#5d72e7]"></span>
-          Latest Events
+          Upcoming Events
         </Typography>
         <Link to="/events">
           <Button
@@ -60,8 +51,8 @@ const LatestEventsSection: React.FC = () => {
       <div>
         {isLoading ? (
           Array(3).fill(0).map((_, index) => <EventCardSkeleton key={index} />) // Show skeletons while loading
-        ) : EventData?.latestEvents && EventData.latestEvents.length > 0 ? (
-          EventData.latestEvents.slice(0, 5).map((event: any, index: number) => {
+        ) : EventData?.upcomingEvents && EventData.upcomingEvents.length > 0 ? (
+          EventData.upcomingEvents.slice(0, 5).map((event: any, index: number) => {
             const { date, month, year, time } = formatDateParts(event.date);
 
             return (
@@ -81,7 +72,7 @@ const LatestEventsSection: React.FC = () => {
           })
         ) : (
           <div className="text-center text-gray-500 mt-8">
-            <Typography variant="h6" {...(undefined as any)}>No latest events found</Typography>
+            <Typography variant="h6" {...(undefined as any)}>No upcoming events found</Typography>
           </div>
         )}
       </div>
@@ -89,4 +80,4 @@ const LatestEventsSection: React.FC = () => {
   );
 };
 
-export default LatestEventsSection;
+export default UpcomingEventSection;
