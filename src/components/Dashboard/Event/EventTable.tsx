@@ -18,6 +18,7 @@ import { useDeleteEventMutation, useGetAllEventsQuery } from "../../../features/
 import {  useEffect, useState } from "react";
 import { ClipLoader, FadeLoader } from "react-spinners";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const TABLE_HEAD = ["Image", "Title", "Status", "Location", "Price", "Actions"];
 
@@ -27,11 +28,12 @@ function EventTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [paginationLoading, setPaginationLoading] = useState(false);
-  const limit = 3;
+  const limit = 5;
   const { data: events, isLoading,isError,error:fetchError } = useGetAllEventsQuery({page,limit,search:searchQuery});
   const [deleteEvent,{isError:delError,isSuccess:delSuccess,error}] = useDeleteEventMutation();
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
- 
+  console.log(fetchError);
+  
   useEffect(()=>{
     if(delSuccess){
 
@@ -102,9 +104,25 @@ function EventTable() {
     }
 }
 
-
   return (
-    <Card className="users-table-card"  {...(undefined as any)}>
+     <>
+     {(fetchError?.status === 404  && !searchQuery) ? (
+              <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+              <h1 className="text-2xl font-bold text-red-500 mb-4">No event data found!</h1>
+              <Link to="/dashboard/event/add">
+              <Button
+                className="flex items-center gap-3  text-white font-medium px-4 py-2 rounded-lg shadow-md transition duration-300"
+                size="sm"
+                {...(undefined as any)}
+              >
+                <i className="fa-regular fa-calendar-plus"></i>
+                Add Event
+              </Button>
+              </Link>
+    
+            </div>
+     ):(
+           <Card className="users-table-card"  {...(undefined as any)}>
       <CardHeader floated={false} shadow={false} className="rounded-none"  {...(undefined as any)}>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -317,7 +335,11 @@ function EventTable() {
     </CardFooter>
    ) }  
      
-    </Card>
+       </Card>
+     )}
+  
+     </>
+
   );
 }
 

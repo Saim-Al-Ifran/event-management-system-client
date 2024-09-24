@@ -41,7 +41,7 @@ const AddCategory: React.FC = () => {
 
     formData.append('name', data.name);
     formData.append('description', data.description);
-    formData.append('image', data.image[0]); // Append the image file
+    formData.append('image', data.image[0]);  
 
     await createCategory(formData);
 

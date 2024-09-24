@@ -34,15 +34,24 @@ const AddEvent: React.FC = () => {
   const [createEvent, { isLoading, isSuccess, isError, error }] = useCreateEventMutation();
   const { data: categories, isLoading: isLoadingCategories,error:categoryError } = useGetCategoriesQuery();
   const navigate = useNavigate();
-   console.log(categoryError);
    
   useEffect(() => {
     if (isSuccess) {
       toast.success('Event created successfully!');
       navigate('/dashboard/events');
+      setTitle('');
+      setDate(null);
+      setLocation('');
+      setCapacity('');
+      setCategory('');
+      setStatus('');
+      setImage(null);
+      setImagePreview('');
+      setPrice('');
+      setDescription('');
     }
     if (isError) {
-      toast.error('Event creation failed!');
+      toast.error(error?.data?.message);
     }
   }, [isSuccess, isError, navigate]);
 
@@ -56,11 +65,7 @@ const AddEvent: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!title || !date || !location || !capacity || !category || !status || !price || !description) {
-      toast.error('Please fill out all fields.');
-      return;
-    }
+ 
 
     const formData = new FormData();
     formData.append('title', title);
@@ -79,16 +84,7 @@ const AddEvent: React.FC = () => {
     try {
       await createEvent(formData);
        
-      setTitle('');
-      setDate(null);
-      setLocation('');
-      setCapacity('');
-      setCategory('');
-      setStatus('');
-      setImage(null);
-      setImagePreview('');
-      setPrice('');
-      setDescription('');
+
     } catch (err) {
       console.error('Failed to create event', err);
     }
