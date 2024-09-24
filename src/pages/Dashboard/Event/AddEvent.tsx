@@ -17,6 +17,7 @@ import { useCreateEventMutation } from '../../../features/Events/eventsApi';
 import toast from 'react-hot-toast';
 import { useGetCategoriesQuery } from '../../../features/categories/categoriesApi';
 import { Category } from '../../../types/api-types';
+import { Link } from 'react-router-dom';
 
 const AddEvent: React.FC = () => {
   const [title, setTitle] = useState<string>('');
@@ -31,8 +32,9 @@ const AddEvent: React.FC = () => {
   const [description, setDescription] = useState<string>('');
 
   const [createEvent, { isLoading, isSuccess, isError, error }] = useCreateEventMutation();
-  const { data: categories, isLoading: isLoadingCategories } = useGetCategoriesQuery();
+  const { data: categories, isLoading: isLoadingCategories,error:categoryError } = useGetCategoriesQuery();
   const navigate = useNavigate();
+   console.log(categoryError);
    
   useEffect(() => {
     if (isSuccess) {
@@ -108,8 +110,25 @@ const AddEvent: React.FC = () => {
           </div>
         </div>
       </Navbar>
+      
+       {categoryError?.status === 404 ?(
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">Please add some categories first!</h1>
+          <Link to="/dashboard/category/add">
+          <Button
+            className="flex items-center gap-3  text-white font-medium px-4 py-2 rounded-lg shadow-md transition duration-300"
+            size="sm"
+            {...(undefined as any)}
+          >
+            <i className="fa-solid fa-folder-plus"></i>
+            Add Category
+          </Button>
+          </Link>
 
-      <div className="p-6 flex justify-center items-center bg-gray-50 min-h-screen">
+        </div>
+
+       ) : (
+           <div className="p-6 flex justify-center items-center bg-gray-50 min-h-screen">
         <Card className="w-full max-w-4xl p-6 shadow-lg rounded-lg" {...(undefined as any)}>
           <Typography variant="h4" className="text-center mb-6" {...(undefined as any)}>
             Create New Event
@@ -167,10 +186,12 @@ const AddEvent: React.FC = () => {
                     onChange={(value) => setCategory(value as string)}
                     {...(undefined as any)}
                   >
+                    
                     {isLoadingCategories ? (
                       <Option disabled>Loading...</Option>
                     ) : (
                       categories?.data?.map((categoryItem: Category) => (
+                         
                         <Option key={categoryItem._id} value={categoryItem._id}>
                           {categoryItem.name}
                         </Option>
@@ -235,6 +256,8 @@ const AddEvent: React.FC = () => {
           </form>
         </Card>
       </div>
+       )}
+   
     </>
   );
 };
