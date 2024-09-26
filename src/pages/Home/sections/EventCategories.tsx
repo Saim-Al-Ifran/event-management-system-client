@@ -39,7 +39,7 @@ const EventCategories: React.FC = () => {
                 <Skeleton key={index} height={256} className="rounded-lg" />
               ))
             ) : (
-              categories?.data.map((category: Category) => (
+              categories?.data.slice(0,6).map((category: Category) => (
                 <EventCategory key={category._id} title={category.name} imageUrl={category.image} />
               ))
             )}
