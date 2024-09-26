@@ -32,7 +32,7 @@ function EventTable() {
   const { data: events, isLoading,isError,error:fetchError } = useGetAllEventsQuery({page,limit,search:searchQuery});
   const [deleteEvent,{isError:delError,isSuccess:delSuccess,error}] = useDeleteEventMutation();
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
-  console.log(fetchError);
+  
   
   useEffect(()=>{
     if(delSuccess){

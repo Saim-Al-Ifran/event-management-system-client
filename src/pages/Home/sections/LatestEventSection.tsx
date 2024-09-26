@@ -4,7 +4,7 @@ import EventCard from '../../../components/Events/EventCard';
 import { Link } from 'react-router-dom';
 import { useGetAllEventsQuery } from '../../../features/Events/eventsApi';
 
-// EventCardSkeleton component for loading state
+ 
 const EventCardSkeleton: React.FC = () => (
   <div className="animate-pulse flex flex-col md:flex-row items-center mb-6">
     <div className="h-48 w-full md:w-1/4 bg-gray-300"></div>
