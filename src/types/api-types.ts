@@ -68,7 +68,9 @@ export interface BookingResponse {
   page: number;
 }
 
-export interface GetBookingsParams extends PaginationParams {}
+export interface GetBookingsParams extends PaginationParams {
+  categoryFilter?:string;
+}
 
 export interface Event{
   _id: string;
