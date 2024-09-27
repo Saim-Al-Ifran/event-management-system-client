@@ -7,7 +7,6 @@ import { Category, Event } from '../../types/api-types';
 import SkeletonLoader from '../../components/SkeletonReloading/SkeletonLoader';
 import { ClipLoader } from 'react-spinners';
 
-// Helper function to format the date
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
   const date = eventDate.getDate().toString().padStart(2, '0');
@@ -16,45 +15,39 @@ const formatDateParts = (dateString: string) => {
   const time = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   return { date, month, year, time };
 };
- 
-// Pagination logic to handle ellipsis
 const getPageNumbers = (totalPages: number, currentPage: number) => {
   const delta = 2;
-  const range = [];
-  const rangeWithDots: (string | number)[] = [];
+  const range: (number | string)[] = [];
   let left = Math.max(2, currentPage - delta);
   let right = Math.min(totalPages - 1, currentPage + delta);
 
-  range.push(1); 
-  for (let i = left; i <= right; i++) {
-    console.log(i)
-    range.push(i);
-  }
-  range.push(totalPages); 
-
-  let lastPage: number | null = null;
-
-  range.forEach(page => {
-    if (lastPage && page - lastPage !== 1) {
-      rangeWithDots.push('...');
+  if (totalPages <= 5) {
+    for (let i = 1; i <= totalPages; i++) {
+      range.push(i);
     }
-    rangeWithDots.push(page);
-    lastPage = page;
-  });
-   
- // console.log(range)
-  
-  return rangeWithDots;
+  } else {
+    range.push(1);
+    if (left > 2) range.push('...');
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+    if (right < totalPages - 1) range.push('...');
+    range.push(totalPages);
+  }
+
+  return range;
 };
+
 
 const EventPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 1;
+  const limit = 3;
   const [paginationLoading, setPaginationLoading] = useState(false);
-  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({ page: currentPage, limit });
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);  
+  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({ page: currentPage, limit,categoryFilter:selectedCategory });
   const { data: categoryData, isLoading: categoryLoading } = useGetCategoriesQuery();
   const totalPages = eventData?.totalPages || 1; 
- 
+  console.log(eventData?.data);
   
   useEffect(() => {
     setPaginationLoading(false);
@@ -81,12 +74,12 @@ const EventPage: React.FC = () => {
     }
   };
 
-  
-  
+  const handleCategoryChange = (categoryName: string) => {
+    setSelectedCategory(categoryName);  
+  };
 
   return (
     <div className="container mx-auto py-8">
-      {/* Filter by Category */}
       {eventLoading || categoryLoading ? (
         <SkeletonLoader />
       ) : (
@@ -102,6 +95,8 @@ const EventPage: React.FC = () => {
                     type="checkbox"
                     id={category.name}
                     className="form-checkbox h-5 w-5 text-[#3F51B5] border-gray-300 rounded focus:ring-0"
+                    checked={selectedCategory === category.name}  
+                    onChange={() => handleCategoryChange(category.name)}  
                   />
                   <label htmlFor={category.name} className="ml-2 text-gray-700">
                     {category.name}
@@ -152,7 +147,6 @@ const EventPage: React.FC = () => {
               </div>
             )}
 
-            {/* Pagination with Ellipsis */}
             <div className="flex justify-center items-center mt-8">
               <button
                 onClick={handlePreviousPage}
@@ -167,13 +161,11 @@ const EventPage: React.FC = () => {
                   <span key={index} className="px-3 py-1 mx-1">...</span>
                 ) : (
                   <button
-                     
                     onClick={() => handlePageClick(page as number)}
                     key={index}
                     className={`px-3 py-1 mx-1 rounded-lg ${
                       currentPage === page ? 'bg-[#3F51B5] text-white' : 'bg-gray-200 text-gray-700'
                     }`}
-                    
                   >
                     {page}
                   </button>
