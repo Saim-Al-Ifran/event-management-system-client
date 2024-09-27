@@ -7,6 +7,7 @@ import { Category, Event } from '../../types/api-types';
 import SkeletonLoader from '../../components/SkeletonReloading/SkeletonLoader';
 import { ClipLoader } from 'react-spinners';
 
+// Helper function to format the date
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
   const date = eventDate.getDate().toString().padStart(2, '0');
@@ -15,44 +16,81 @@ const formatDateParts = (dateString: string) => {
   const time = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   return { date, month, year, time };
 };
+ 
+// Pagination logic to handle ellipsis
+const getPageNumbers = (totalPages: number, currentPage: number) => {
+  const delta = 2;
+  const range = [];
+  const rangeWithDots: (string | number)[] = [];
+  let left = Math.max(2, currentPage - delta);
+  let right = Math.min(totalPages - 1, currentPage + delta);
+
+  range.push(1); 
+  for (let i = left; i <= right; i++) {
+    console.log(i)
+    range.push(i);
+  }
+  range.push(totalPages); 
+
+  let lastPage: number | null = null;
+
+  range.forEach(page => {
+    if (lastPage && page - lastPage !== 1) {
+      rangeWithDots.push('...');
+    }
+    rangeWithDots.push(page);
+    lastPage = page;
+  });
+   
+ // console.log(range)
+  
+  return rangeWithDots;
+};
 
 const EventPage: React.FC = () => {
-  
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 3;
+  const limit = 1;
   const [paginationLoading, setPaginationLoading] = useState(false);
-  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({page:currentPage,limit});
+  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({ page: currentPage, limit });
   const { data: categoryData, isLoading: categoryLoading } = useGetCategoriesQuery();
-  const totalPages = eventData?.totalPages; 
-
-  useEffect(()=>{
-        setPaginationLoading(false)
-  },[eventData])
+  const totalPages = eventData?.totalPages || 1; 
+ 
+  
+  useEffect(() => {
+    setPaginationLoading(false);
+  }, [eventData?.data]);
 
   const handlePreviousPage = () => {
-    setPaginationLoading(true);
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) {
+      setPaginationLoading(true);
+      setCurrentPage(currentPage - 1);
+    }
   };
+
   const handleNextPage = () => {
-   
-    if (currentPage < totalPages){
+    if (currentPage < totalPages) {
       setPaginationLoading(true);
       setCurrentPage(currentPage + 1);
     }
   };
+
   const handlePageClick = (pageNumber: number) => {
-    setPaginationLoading(true);
-    setCurrentPage(pageNumber);
+    if (pageNumber !== currentPage) {
+      setPaginationLoading(true);
+      setCurrentPage(pageNumber);
+    }
   };
+
   
+  
+
   return (
     <div className="container mx-auto py-8">
       {/* Filter by Category */}
       {eventLoading || categoryLoading ? (
         <SkeletonLoader />
       ) : (
-         <div className="flex flex-wrap mb-8">
-
+        <div className="flex flex-wrap mb-8">
           <div className="w-full md:w-1/4 px-2">
             <Typography variant="h6" className="font-bold text-gray-800 mb-4" {...(undefined as any)}>
               Category
@@ -80,60 +118,68 @@ const EventPage: React.FC = () => {
                 All Events
               </Typography>
               <div className="flex items-center">
-                <Typography variant="body1" className="mr-4" {...(undefined as any)}>Sort By</Typography >
+                <Typography variant="body1" className="mr-4" {...(undefined as any)}>Sort By</Typography>
                 <Select label="Select Sort Order" {...(undefined as any)}>
                   <Option value="Oldest">Oldest</Option>
                   <Option value="Newest">Newest</Option>
                 </Select>
               </div>
             </div>
-            {paginationLoading ? (
-                <div className="flex justify-center">
-                    <ClipLoader color="#607D8B" size={30} />
-                </div>
-            ):(
-            <div className="grid grid-cols-1 gap-6 mt-[2rem]">
-              {eventData?.data.map((event: Event, index: number) => {
-                const { date, month, year, time } = formatDateParts(event.date);
-                return (
-                  <EventCard
-                    key={index}
-                    date={date}
-                    month={month}
-                    year={year}
-                    time={`${date} ${month}, ${year} | ${time}`}
-                    title={event.title}
-                    description={event.description}
-                    imageUrl={event.image}
-                    isExpired={new Date(event.date) < new Date()}
-                    {...(undefined as any)}
-                  />
-                );
-              })}
-            </div>
-            )}
-  
 
-           
+            {paginationLoading ? (
+              <div className="flex justify-center">
+                <ClipLoader color="#607D8B" size={30} />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 mt-[2rem]">
+                {eventData?.data.map((event: Event, index: number) => {
+                  const { date, month, year, time } = formatDateParts(event.date);
+                  return (
+                    <EventCard
+                      key={index}
+                      date={date}
+                      month={month}
+                      year={year}
+                      time={`${date} ${month}, ${year} | ${time}`}
+                      title={event.title}
+                      description={event.description}
+                      imageUrl={event.image}
+                      isExpired={new Date(event.date) < new Date()}
+                      {...(undefined as any)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Pagination with Ellipsis */}
             <div className="flex justify-center items-center mt-8">
               <button
                 onClick={handlePreviousPage}
                 className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
                 disabled={currentPage === 1}
               >
-                 <i className="fa-solid fa-chevron-left"></i>
+                <i className="fa-solid fa-chevron-left"></i>
               </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  onClick={() => handlePageClick(index + 1)}
-                  key={index}
-                  className={`px-3 py-1 mx-1 rounded-lg ${
-                    currentPage === index + 1 ? 'bg-[#3F51B5] text-white' : 'bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
+
+              {getPageNumbers(totalPages, currentPage).map((page, index) =>
+                page === '...' ? (
+                  <span key={index} className="px-3 py-1 mx-1">...</span>
+                ) : (
+                  <button
+                     
+                    onClick={() => handlePageClick(page as number)}
+                    key={index}
+                    className={`px-3 py-1 mx-1 rounded-lg ${
+                      currentPage === page ? 'bg-[#3F51B5] text-white' : 'bg-gray-200 text-gray-700'
+                    }`}
+                    
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+
               <button
                 onClick={handleNextPage}
                 className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
