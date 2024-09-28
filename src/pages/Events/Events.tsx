@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Select, Option } from "@material-tailwind/react";
+import { Typography, Select, Option, Breadcrumbs, Input, Tabs } from "@material-tailwind/react";
 import EventCard from '../../components/Events/EventCard';
 import { useGetAllEventsQuery } from '../../features/Events/eventsApi';
 import { useGetCategoriesQuery } from '../../features/categories/categoriesApi';
 import { Category, Event } from '../../types/api-types';
 import SkeletonLoader from '../../components/SkeletonReloading/SkeletonLoader';
 import { ClipLoader } from 'react-spinners';
+import { Link } from 'react-router-dom';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
@@ -46,28 +48,46 @@ const EventPage: React.FC = () => {
   const [selectedCategoryLoading, setselectedCategoryLoading] = useState<boolean>(false);
   const [sortLoading, setSortLoading] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); 
+  const [searchLoading, setSearchLoading] = useState<boolean>(false); 
   const [sortOrder, setSortOrder] = useState<string>('');
-  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const { data: eventData, isLoading: eventLoading,error:eventError} = useGetAllEventsQuery({
      page: currentPage,
      limit,
      categoryFilter:selectedCategory,
-     sort:sortOrder 
+     sort:sortOrder,
+     search:searchQuery
     });
-  const { data: categoryData, isLoading: categoryLoading } = useGetCategoriesQuery();
+  const { data: categoryData, isLoading: categoryLoading,error:errorCategory} = useGetCategoriesQuery();
   const totalPages = eventData?.totalPages || 1; 
   
-  console.log(eventLoading);
+ 
   
   
   useEffect(() => {
+  
     setPaginationLoading(false);
     setselectedCategoryLoading(false);
     setSortLoading(false);
+    setSearchLoading(false)
   }, [eventData?.data]);
 
   useEffect(()=>{
+    setselectedCategoryLoading(false);
+    setPaginationLoading(false);
+    setSearchLoading(false);
+    setSortLoading(false);
+
+  },[eventError,errorCategory])
+
+  useEffect(()=>{
        setCurrentPage(1);
-  },[selectedCategory])
+       setSearchQuery('')
+  },[selectedCategory]);
+
+  useEffect(()=>{
+    setCurrentPage(1);
+  },[searchQuery]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -109,8 +129,47 @@ const EventPage: React.FC = () => {
     }
  
   }
-  console.log(sortOrder);
+  console.log(searchQuery);
+  console.log(searchLoading);
+  console.log({searchLoading:searchLoading,eventLoading:eventLoading});
+  
+  console.log(eventData?.data);
+   
+  
+  
+  
+ 
   return (
+    <>
+      <nav className="bg-gray-100 py-2">
+        <div className="container px-4 mx-auto">
+          <Breadcrumbs separator="/" className="text-gray-600" {...(undefined as any)}>
+            <Link to="/" className="hover:underline text-[#3F51B5]">
+              Home
+            </Link>
+            <Typography className="text-gray-500" {...(undefined as any)}>Events</Typography>
+          </Breadcrumbs>
+        </div>
+      </nav>
+
+      <div className="container px-4 mx-auto mt-4">
+        <div className="flex justify-end items-center">
+        <Tabs value="all" className="w-full md:w-max"></Tabs>
+          <div className="w-full md:w-72">
+            <Input
+              label="Search events..."
+              icon={<MagnifyingGlassIcon className="h-5 w-5 mb-2" />}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setSearchLoading(true)
+              }}
+              {...(undefined as any)}
+            />
+          </div>
+        </div>
+      </div>
+
     <div className="container mx-auto py-8">
       {eventLoading || categoryLoading ? (
         <SkeletonLoader />
@@ -137,8 +196,15 @@ const EventPage: React.FC = () => {
               ))}
             </div>
           </div>
+          {eventError?.status === 404 ? (
+            <div className="w-full md:w-3/4 px-2">
+                  <div className="text-red-500 text-center">
+                      {eventError && <p>No events data found!!</p>}
+                  </div>
+            </div>
 
-          <div className="w-full md:w-3/4 mt-4 mb-2 px-2">
+          ):(
+           <div className="w-full md:w-3/4 mt-4 mb-2 px-2">
             <div className="flex justify-between items-center">
               <Typography variant="h6" className="text-2xl font-bold flex items-center mb-4" {...(undefined as any)}>
                 <span className="inline-block w-1 h-8 mr-2 bg-[#5d72e7]"></span>
@@ -156,13 +222,10 @@ const EventPage: React.FC = () => {
                   <Option value="desc">Newest</Option>
                 </Select>
 
- 
-
-
               </div>
             </div>
 
-            {(paginationLoading || selectedCategoryLoading || sortLoading) ? (
+            {(paginationLoading || selectedCategoryLoading || sortLoading || searchLoading) ? (
               <div className="flex justify-center">
                 <ClipLoader color="#607D8B" size={30} />
               </div>
@@ -187,46 +250,51 @@ const EventPage: React.FC = () => {
                 })}
               </div>
             )}
-            {!selectedCategoryLoading  && (
-                      <div className="flex justify-center items-center mt-8">
-              <button
-                onClick={handlePreviousPage}
-                className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
-                disabled={currentPage === 1}
-              >
-                <i className="fa-solid fa-chevron-left"></i>
-              </button>
+{!selectedCategoryLoading && !searchLoading && (
+  <div className="flex justify-center items-center mt-8">
+    <button
+      onClick={handlePreviousPage}
+      className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
+      disabled={currentPage === 1}
+    >
+      <i className="fa-solid fa-chevron-left"></i>
+    </button>
 
-              {getPageNumbers(totalPages, currentPage).map((page, index) =>
-                page === '...' ? (
-                  <span key={index} className="px-3 py-1 mx-1">...</span>
-                ) : (
-                  <button
-                    onClick={() => handlePageClick(page as number)}
-                    key={index}
-                    className={`px-3 py-1 mx-1 rounded-lg ${
-                      currentPage === page ? 'bg-[#3F51B5] text-white' : 'bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+    {getPageNumbers(totalPages, currentPage).map((page, index) =>
+      page === '...' ? (
+        <span key={index} className="px-3 py-1 mx-1">...</span>
+      ) : (
+        <button
+          onClick={() => handlePageClick(page as number)}
+          key={index}
+          className={`px-3 py-1 mx-1 rounded-lg ${
+            currentPage === page ? 'bg-[#3F51B5] text-white' : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          {page}
+        </button>
+      )
+    )}
 
-              <button
-                onClick={handleNextPage}
-                className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
-                disabled={currentPage === totalPages}
-              >
-                <i className="fa-solid fa-chevron-right"></i>
-              </button>
-            </div>
-            )}
-    
+    <button
+      onClick={handleNextPage}
+      className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
+      disabled={currentPage === totalPages}
+    >
+      <i className="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+)}
+
           </div>
+          )}
+
+
         </div>
       )}
     </div>
+    </>
+
   );
 };
 
