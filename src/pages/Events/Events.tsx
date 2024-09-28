@@ -42,17 +42,27 @@ const getPageNumbers = (totalPages: number, currentPage: number) => {
 const EventPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 3;
-  const [paginationLoading, setPaginationLoading] = useState(false);
-  const [selectedCategoryLoading, setselectedCategoryLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);  
-  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({ page: currentPage, limit,categoryFilter:selectedCategory });
+  const [paginationLoading, setPaginationLoading] = useState<boolean>(false);
+  const [selectedCategoryLoading, setselectedCategoryLoading] = useState<boolean>(false);
+  const [sortLoading, setSortLoading] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); 
+  const [sortOrder, setSortOrder] = useState<string>('');
+  const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({
+     page: currentPage,
+     limit,
+     categoryFilter:selectedCategory,
+     sort:sortOrder 
+    });
   const { data: categoryData, isLoading: categoryLoading } = useGetCategoriesQuery();
   const totalPages = eventData?.totalPages || 1; 
-  console.log(eventData?.data);
+  
+  console.log(eventLoading);
+  
   
   useEffect(() => {
     setPaginationLoading(false);
     setselectedCategoryLoading(false);
+    setSortLoading(false);
   }, [eventData?.data]);
 
   useEffect(()=>{
@@ -81,15 +91,25 @@ const EventPage: React.FC = () => {
   };
 
   const handleCategoryChange = (categoryName: string) => {
-    
-    if(selectedCategory !== categoryName){
-      setselectedCategoryLoading(true)
-      setSelectedCategory(categoryName);  
+
+    if (selectedCategory === categoryName) {
+      setSelectedCategory(null);
+      setselectedCategoryLoading(true);
+    } else {
+      setSelectedCategory(categoryName);
+      setselectedCategoryLoading(true);
+    }
+
+  };
+  const handleSoringChange = (sort:string)=>{
+    if(sortOrder !== sort){
+      setSortOrder(sort);
+      setCurrentPage(1);
+      setSortLoading(true);
     }
  
-  
-  };
-
+  }
+  console.log(sortOrder);
   return (
     <div className="container mx-auto py-8">
       {eventLoading || categoryLoading ? (
@@ -126,14 +146,23 @@ const EventPage: React.FC = () => {
               </Typography>
               <div className="flex items-center">
                 <Typography variant="body1" className="mr-4" {...(undefined as any)}>Sort By</Typography>
-                <Select label="Select Sort Order" {...(undefined as any)}>
-                  <Option value="Oldest">Oldest</Option>
-                  <Option value="Newest">Newest</Option>
+                
+                <Select 
+                  label="Select Sort Order"
+                  onChange={(value) => handleSoringChange(value as string)} 
+                  {...(undefined as any)}
+                >
+                  <Option value="asc">Oldest</Option>
+                  <Option value="desc">Newest</Option>
                 </Select>
+
+ 
+
+
               </div>
             </div>
 
-            {(paginationLoading || selectedCategoryLoading) ? (
+            {(paginationLoading || selectedCategoryLoading || sortLoading) ? (
               <div className="flex justify-center">
                 <ClipLoader color="#607D8B" size={30} />
               </div>
@@ -158,7 +187,7 @@ const EventPage: React.FC = () => {
                 })}
               </div>
             )}
-            {!selectedCategoryLoading && (
+            {!selectedCategoryLoading  && (
                       <div className="flex justify-center items-center mt-8">
               <button
                 onClick={handlePreviousPage}

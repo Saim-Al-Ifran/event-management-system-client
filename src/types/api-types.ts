@@ -70,6 +70,7 @@ export interface BookingResponse {
 
 export interface GetBookingsParams extends PaginationParams {
   categoryFilter?:string;
+  sort?:string
 }
 
 export interface Event{

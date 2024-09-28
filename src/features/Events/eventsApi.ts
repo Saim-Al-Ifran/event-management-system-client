@@ -6,12 +6,13 @@ import { Event, EventResponse, GetBookingsParams } from "../../types/api-types";
 const eventsApi = apiSlice.injectEndpoints({
     endpoints: (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
         getAllEvents: builder.query<EventResponse,GetBookingsParams>({
-              query:({page,limit,search,categoryFilter} = {})=>{
+              query:({page,limit,search,categoryFilter,sort} = {})=>{
                 let base = `/event-administration/events?`
-                if (page) base += `page=${page}`;
-                if (limit) base += `${page ? '&' : ''}limit=${limit}`;
-                if(categoryFilter) base += `${page || limit ? '&' : ''}category=${categoryFilter}`;
-                if (search) base += `${page || limit ? '&' : ''}search=${search}`;
+                if (page) base           += `page=${page}`;
+                if (limit) base          += `${page ? '&' : ''}limit=${limit}`;
+                if (sort) base           += `${page || limit ? '&' : ''}sort=${sort}`
+                if(categoryFilter) base  += `${page || limit ? '&' : ''}category=${categoryFilter}`;
+                if (search) base         += `${page || limit ? '&' : ''}search=${search}`;
                 return base;
               },
               providesTags:['Events']
