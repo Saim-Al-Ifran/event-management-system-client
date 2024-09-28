@@ -43,6 +43,7 @@ const EventPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 3;
   const [paginationLoading, setPaginationLoading] = useState(false);
+  const [selectedCategoryLoading, setselectedCategoryLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);  
   const { data: eventData, isLoading: eventLoading } = useGetAllEventsQuery({ page: currentPage, limit,categoryFilter:selectedCategory });
   const { data: categoryData, isLoading: categoryLoading } = useGetCategoriesQuery();
@@ -51,7 +52,12 @@ const EventPage: React.FC = () => {
   
   useEffect(() => {
     setPaginationLoading(false);
+    setselectedCategoryLoading(false);
   }, [eventData?.data]);
+
+  useEffect(()=>{
+       setCurrentPage(1);
+  },[selectedCategory])
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -75,7 +81,13 @@ const EventPage: React.FC = () => {
   };
 
   const handleCategoryChange = (categoryName: string) => {
-    setSelectedCategory(categoryName);  
+    
+    if(selectedCategory !== categoryName){
+      setselectedCategoryLoading(true)
+      setSelectedCategory(categoryName);  
+    }
+ 
+  
   };
 
   return (
@@ -121,21 +133,21 @@ const EventPage: React.FC = () => {
               </div>
             </div>
 
-            {paginationLoading ? (
+            {(paginationLoading || selectedCategoryLoading) ? (
               <div className="flex justify-center">
                 <ClipLoader color="#607D8B" size={30} />
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 mt-[2rem]">
                 {eventData?.data.map((event: Event, index: number) => {
-                  const { date, month, year, time } = formatDateParts(event.date);
+                  const { date, month, year} = formatDateParts(event.date);
                   return (
                     <EventCard
                       key={index}
                       date={date}
                       month={month}
                       year={year}
-                      time={`${date} ${month}, ${year} | ${time}`}
+                      time={`${date} ${month}, ${year}`}
                       title={event.title}
                       description={event.description}
                       imageUrl={event.image}
@@ -146,8 +158,8 @@ const EventPage: React.FC = () => {
                 })}
               </div>
             )}
-
-            <div className="flex justify-center items-center mt-8">
+            {!selectedCategoryLoading && (
+                      <div className="flex justify-center items-center mt-8">
               <button
                 onClick={handlePreviousPage}
                 className="px-3 py-1 rounded-lg bg-gray-200 text-gray-700 disabled:opacity-50"
@@ -180,6 +192,8 @@ const EventPage: React.FC = () => {
                 <i className="fa-solid fa-chevron-right"></i>
               </button>
             </div>
+            )}
+    
           </div>
         </div>
       )}
