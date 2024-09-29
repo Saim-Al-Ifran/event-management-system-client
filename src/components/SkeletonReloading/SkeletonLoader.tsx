@@ -4,7 +4,9 @@ import 'react-loading-skeleton/dist/skeleton.css';
 const SkeletonLoader: React.FC = () => {
     return (
       <div className="container mx-auto py-8">
+         <Skeleton width={200} height={20} className="mb-6" />
         {/* Filter Skeleton */}
+        
         <div className="flex flex-wrap mb-8">
           <div className="w-full md:w-1/4 px-2">
             <Typography variant="h6" className="font-bold text-gray-800 mb-4" {...(undefined as any)}>

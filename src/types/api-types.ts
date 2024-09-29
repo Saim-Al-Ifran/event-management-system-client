@@ -95,6 +95,17 @@ export interface EventResponse{
   page: number;
 }
 
+export interface EventCardProps {
+  id: string;
+  date: string;
+  month: string;
+  year: string;
+  title: string;
+  time: string;
+  description: string;
+  imageUrl: string;
+  isExpired: boolean;
+}
 export interface GetEventsParams extends PaginationParams{}
 
 export interface UserRequest{

@@ -22,8 +22,8 @@ import ContactUs from '../pages/ContactUs/ContactUs';
 import Categories from '../pages/Categories/Categories';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import AdminOrSuperAdmin from './AdminOrSuperAdmin';
-import NotFound from '../components/shared/NotFound';
 import DashboardHome from '../pages/Dashboard/DashboardHome/DashboardHome';
+import EventDetailsPage from '../pages/Events/EventDetailsPage';
  
 const AppRouter = () => {
   return (
@@ -35,6 +35,7 @@ const AppRouter = () => {
              <Route path='/' element={<Main/>}>
                       <Route index element={<Home/>} />
                       <Route path='/events' element={<Events/>} />
+                      <Route path='/events/:id' element={<EventDetailsPage/>} />
                       <Route path='/categories' element={<Categories/>}/>
                       <Route path='/about' element={<AboutUs/>}/>
                       <Route path='/contact' element={<ContactUs/>} />

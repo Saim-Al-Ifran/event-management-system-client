@@ -129,14 +129,7 @@ const EventPage: React.FC = () => {
     }
  
   }
-  console.log(searchQuery);
-  console.log(searchLoading);
-  console.log({searchLoading:searchLoading,eventLoading:eventLoading});
-  
-  console.log(eventData?.data);
-   
-  
-  
+ 
   
  
   return (
@@ -236,6 +229,7 @@ const EventPage: React.FC = () => {
                   return (
                     <EventCard
                       key={index}
+                      id={event._id}
                       date={date}
                       month={month}
                       year={year}

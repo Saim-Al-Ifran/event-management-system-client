@@ -1,18 +1,10 @@
 import React from 'react';
 import { Card, CardHeader, CardBody, Typography, Button } from "@material-tailwind/react";
-
-interface EventCardProps {
-  date: string;
-  month: string;
-  year: string;
-  title: string;
-  time: string;
-  description: string;
-  imageUrl: string;
-  isExpired: boolean;
-}
+import { Link } from 'react-router-dom';
+import { EventCardProps } from '../../types/api-types';
 
 const EventCard: React.FC<EventCardProps> = ({
+  id,
   date,
   month,
   year,
@@ -45,9 +37,12 @@ const EventCard: React.FC<EventCardProps> = ({
         <Typography variant="paragraph" className="mb-4" {...(undefined as any)}>
           {description}
         </Typography>
-        <Button  variant="filled" className="mb-2 bg-[#3F51B5]" {...(undefined as any)}>
-          READ MORE
-        </Button>
+        <Link to={`/events/${id}`}>
+          <Button  variant="filled" className="mb-2 bg-[#3F51B5]" {...(undefined as any)}>
+            READ MORE
+          </Button>
+       </Link>
+
         {/* {isExpired && <Typography variant="small" color="red" className="text-sm" {...(undefined as any)}>Event has expired.</Typography>} */}
       </CardBody>
     </Card>
