@@ -12,36 +12,44 @@ const EventCategories: React.FC = () => {
 
   return (
     <>
-      {/* Breadcrumbs Section */}
+     
       <nav className="bg-gray-100 py-2">
         <div className="container px-4 mx-auto">
-          <Breadcrumbs separator="/" className="text-gray-600" {...(undefined as any)}>
-            <Link to="/" className="hover:underline text-[#3F51B5]">
-              Home
-            </Link>
-            <Link to="/events" className="hover:underline text-[#3F51B5]">
-              Events
-            </Link>
-            <Typography className="text-gray-500" {...(undefined as any)}>Categories</Typography>
-          </Breadcrumbs>
+          {isLoading ? (
+            <Skeleton height={20} width={200} />
+          ) : (
+            <Breadcrumbs separator="/" className="text-gray-600" {...(undefined as any)}>
+              <Link to="/" className="hover:underline text-[#3F51B5]">
+                Home
+              </Link>
+              <Link to="/events" className="hover:underline text-[#3F51B5]">
+                Events
+              </Link>
+              <Typography className="text-gray-500" {...(undefined as any)}>
+                Categories
+              </Typography>
+            </Breadcrumbs>
+          )}
         </div>
       </nav>
 
-      {/* Categories Section */}
+  
       <section className="py-8 bg-white">
         <div className="container px-4 mx-auto">
-          {/* Header section */}
           <div className="flex items-center justify-between mb-8">
-            <Typography variant="h2" className="text-3xl font-bold flex items-center" {...(undefined as any)}>
-              <span className="inline-block w-1 h-8 mr-2 bg-[#5d72e7]"></span>
-              EVENTS BY CATEGORIES
-            </Typography>
+            {isLoading ? (
+              <Skeleton height={36} width={300} />
+            ) : (
+              <Typography variant="h2" className="text-3xl font-bold flex items-center" {...(undefined as any)}>
+                <span className="inline-block w-1 h-8 mr-2 bg-[#5d72e7]"></span>
+                EVENTS BY CATEGORIES
+              </Typography>
+            )}
           </div>
 
-          {/* Categories grid */}
+       
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {isLoading ? (
-              // Show skeletons while loading
               Array.from({ length: 6 }).map((_, index) => (
                 <Skeleton key={index} height={256} className="rounded-lg" />
               ))
