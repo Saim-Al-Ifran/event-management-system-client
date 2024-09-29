@@ -8,6 +8,7 @@ import SkeletonLoader from '../../components/SkeletonReloading/SkeletonLoader';
 import { ClipLoader } from 'react-spinners';
 import { Link } from 'react-router-dom';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import Skeleton from 'react-loading-skeleton';
 
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
@@ -61,11 +62,7 @@ const EventPage: React.FC = () => {
   const { data: categoryData, isLoading: categoryLoading,error:errorCategory} = useGetCategoriesQuery();
   const totalPages = eventData?.totalPages || 1; 
   
- 
-  
-  
   useEffect(() => {
-  
     setPaginationLoading(false);
     setselectedCategoryLoading(false);
     setSortLoading(false);
@@ -134,18 +131,30 @@ const EventPage: React.FC = () => {
  
   return (
     <>
-      <nav className="bg-gray-100 py-2">
-        <div className="container px-4 mx-auto">
-          <Breadcrumbs separator="/" className="text-gray-600" {...(undefined as any)}>
-            <Link to="/" className="hover:underline text-[#3F51B5]">
-              Home
-            </Link>
-            <Typography className="text-gray-500" {...(undefined as any)}>Events</Typography>
-          </Breadcrumbs>
-        </div>
-      </nav>
+     {eventLoading || categoryLoading ? (
+        <nav className="bg-gray-100 py-2">
+             <Skeleton width={200} height={20} className="mb-6" />
+        </nav>
+     ) : (
+          <nav className="bg-gray-100 py-2">
+            <div className="container px-4 mx-auto">
+              <Breadcrumbs separator="/" className="text-gray-600" {...(undefined as any)}>
+                <Link to="/" className="hover:underline text-[#3F51B5]">
+                  Home
+                </Link>
+                <Typography className="text-gray-500" {...(undefined as any)}>Events</Typography>
+              </Breadcrumbs>
+            </div>
+          </nav>
+     )}
 
-      <div className="container px-4 mx-auto mt-4">
+        
+      {eventLoading || categoryLoading ? (
+            <div className="container px-4 mx-auto mt-4 flex justify-end" >
+            <Skeleton width={150} height={40} />
+          </div>
+      ) : (
+              <div className="container px-4 mx-auto mt-4">
         <div className="flex justify-end items-center">
         <Tabs value="all" className="w-full md:w-max"></Tabs>
           <div className="w-full md:w-72">
@@ -162,6 +171,8 @@ const EventPage: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
+
 
     <div className="container mx-auto py-8">
       {eventLoading || categoryLoading ? (
