@@ -55,7 +55,14 @@ const userApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Users']
         }),
-
+        register:builder.mutation({
+            query:(data)=>({
+                url:'/event-management/register',
+                method:'POST',
+                body:data
+            })
+        }),
+           
         updateUser: builder.mutation<UserUpdateResponse,UserRequest>({
             query: ({ role, entity, id, data }) => ({
                 url: getUrlForRole(role, entity, id),
@@ -83,6 +90,7 @@ const userApi = apiSlice.injectEndpoints({
 export const {
     useGetUsersQuery,
     useCreateUserMutation,
+    useRegisterMutation,
     useGetUserByIdQuery,
     useUpdateUserMutation,
     useDeleteUserMutation
