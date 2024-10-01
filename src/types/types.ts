@@ -68,3 +68,10 @@ export  interface ChartDataPoint {
   uv: number;
   [key: string]: any;
 }
+
+export interface RegistrationcFormData {
+  username: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+}
