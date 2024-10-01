@@ -9,21 +9,23 @@ export default function useAuthCheck() {
  
     useEffect(() => {
         const cookieAuth = Cookies.get("token");
- 
-        if (cookieAuth) {
+        const localStorageUser = localStorage.getItem("user");
+
+        if (cookieAuth && localStorageUser) {
             const auth = JSON.parse(cookieAuth);
-          
-            if (auth?.accessToken && auth?.user) {
+            const user = JSON.parse(localStorageUser);
+            
+            if (auth?.accessToken && user) {
                 dispatch(
                     userLoggedIn({
                         accessToken: auth.accessToken,
-                        user: auth.user,
+                        user: user,
                     })
                 );
             }
         }
         setAuthChecked(true);
-    }, [dispatch, setAuthChecked]);
+    }, [dispatch]);
 
     return authChecked;
 }

@@ -46,7 +46,8 @@ function UsersTable() {
      search:searchQuery,
   });
  const [deleteUser,{isSuccess:isDelSuccess,isError:isDelError}]= useDeleteUserMutation();
-  
+ 
+
   useEffect(()=>{
         if(isDelSuccess){
           Swal.fire({

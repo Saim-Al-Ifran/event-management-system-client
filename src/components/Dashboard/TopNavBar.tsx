@@ -17,6 +17,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ toggleSidebar }) => {
 
   const handleLogout = async() => {
     Cookies.remove('token');
+    localStorage.removeItem('user');
     dispatch(userLoggedOut());
     toast.success("successfully logout");
     navigate('/admin/login');    

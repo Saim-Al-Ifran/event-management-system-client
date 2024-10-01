@@ -7,54 +7,50 @@ import { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { UserLoginResponse } from '../../types/types';
 import { UserLoginInput } from '../../types/api-types';
 
-const clearToken = (dispatch:Dispatch) => {
+const clearToken = (dispatch: Dispatch) => {
     Cookies.remove('token');
+    localStorage.removeItem('user'); 
     dispatch(userLoggedOut());
+    
 };
- 
 
 const authApi = apiSlice.injectEndpoints({
-      endpoints:(builder: EndpointBuilder<BaseQueryFn, string, string>)=>({
-             adminLogin: builder.mutation<UserLoginResponse, UserLoginInput>({
-                    query:(data)=>({
-                         url:'/event-administration/login',
-                         method:'POST',
-                         body:data
-                    }),
-                    async onQueryStarted(_arg , { queryFulfilled, dispatch }) {
-                        try {
-                            const result = await queryFulfilled;
-                            const accessToken = result?.data?.token;
-                            
-                            const expirationTime = new Date();
-                            expirationTime.setTime(expirationTime.getTime() + 60 * 60 * 1000);                 
-        
-                            Cookies.set(
-                                'token',
-                                JSON.stringify({
-                                    accessToken: accessToken,
-                                    user: result?.data?.data?.user,
-                                }),
-                                { expires: expirationTime }
-                            );
-        
-                            dispatch(userLoggedIn({
-                                accessToken:accessToken,
-                                user:result?.data?.data?.user
-                            }))
-        
-                            setTimeout(() => {
-                                clearToken(dispatch);
-                                 
-                            }, expirationTime.getTime() - Date.now());
-        
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-             }),
-             
-      })
-})
+    endpoints: (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
+        adminLogin: builder.mutation<UserLoginResponse, UserLoginInput>({
+            query: (data) => ({
+                url: '/event-administration/login',
+                method: 'POST',
+                body: data
+            }),
+            async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
+                try {
+                    const result = await queryFulfilled;
+                    const accessToken = result?.data?.token;
+                    const user = result?.data?.data?.user;
+                    const tokenLifetimeMs = 60 * 60 * 1000; // 1 hour
 
-export const {useAdminLoginMutation} = authApi;
+                    Cookies.set(
+                        'token',
+                        JSON.stringify({ accessToken }),
+                        { expires: 1 / 24 } // 1 hour
+                    );
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    dispatch(userLoggedIn({
+                        accessToken,
+                        user
+                    }));
+                    setTimeout(() => {
+                        clearToken(dispatch);
+                    }, tokenLifetimeMs);
+
+                } catch (err) {
+                    console.error('Login failed:', err);
+
+                }
+            }
+        }),
+    })
+});
+
+export const { useAdminLoginMutation } = authApi;
