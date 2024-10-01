@@ -50,6 +50,7 @@ const UserRegister: React.FC = () => {
                 label="Username"
                 className="mb-4"
                 {...(undefined as any)}
+                error={errors.username  ? true : false}
               />
               {errors.username && <span className="text-red-500">{errors.username.message}</span>}
             </div>
@@ -68,6 +69,7 @@ const UserRegister: React.FC = () => {
                 label="Phone Number"
                 className="mb-4"
                 {...(undefined as any)}
+                error={errors.phoneNumber  ? true : false}
               />
               {errors.phoneNumber && <span className="text-red-500">{errors.phoneNumber.message}</span>}
             </div>
@@ -80,6 +82,7 @@ const UserRegister: React.FC = () => {
                 label="Email"
                 className="mb-4"
                 {...(undefined as any)}
+                error={errors.email ? true : false}
               />
               {errors.email && <span className="text-red-500">{errors.email.message}</span>}
             </div>
@@ -92,6 +95,7 @@ const UserRegister: React.FC = () => {
                 label="Password"
                 className="mb-4"
                 {...(undefined as any)}
+                error={errors.password ? true : false}
               />
               {errors.password && <span className="text-red-500">{errors.password.message}</span>}
             </div>

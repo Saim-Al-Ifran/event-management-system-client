@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from "@material-tailwind/react";
 import { Link, useLocation } from 'react-router-dom';
-
+import UserProfile from '../Profile/UserProfile';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const getUser = useSelector((state: RootState)=>state.auth);
+  console.log(getUser);
+  
   const isActive = (path: string) => {
     return location.pathname === path ? 'border-opacity-100 text-[#506aff]' : 'border-opacity-0';
   };
@@ -82,7 +87,10 @@ const Navbar: React.FC = () => {
             </svg>
           </button>
         </div>
-        <div className="hidden md:flex w-3/12 justify-end">
+        {getUser?.user ? (
+           <UserProfile/>
+        ) : (
+          <div className="hidden md:flex w-3/12 justify-end">
           <Link to="/login">
             <Button
               type="submit"
@@ -95,6 +103,9 @@ const Navbar: React.FC = () => {
             </Button>
           </Link>
         </div>
+        )}
+
+      
         {isOpen && (
           <div className="md:hidden absolute top-12 left-0 w-full bg-white shadow-md z-10">
             <ul className="flex flex-col items-center">
