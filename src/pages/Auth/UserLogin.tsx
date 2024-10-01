@@ -8,13 +8,23 @@ import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { LoginFormData } from '../../types/types';
 import { useUserLoginMutation } from '../../features/auth/authApi';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
 
 const UserLogin: React.FC = () => {
 
   const auth = getAuth(app);
+  const getUser = useSelector((state: RootState)=>state.auth);
+  const {user} = getUser;
   const [userLogin, { isSuccess, isError, error: loginError }] = useUserLoginMutation()
   const navigate = useNavigate();
   const { register: loginForm, handleSubmit, formState: { errors } } = useForm< LoginFormData >();
+
+  useEffect(()=>{
+      if(user && user.role == 'user'){
+          navigate('/');
+      }
+  },[user]);
 
   useEffect(() => {
     if (isSuccess) {

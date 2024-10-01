@@ -5,20 +5,33 @@ import { IFormInput } from "../../types/types";
 import { toast } from "react-hot-toast";
 import { useAdminLoginMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../app/store";
+import { useSelector } from "react-redux";
  
 
 const AdminLogin: React.FC = () => {
  
   const navigate = useNavigate();
+  const getUser = useSelector((state: RootState)=>state.auth);
+  const {user} = getUser;
+  console.log(user);
+  
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
   const [adminLogin,{isError,error,isSuccess,isLoading}] = useAdminLoginMutation();
-  const onSubmit: SubmitHandler<IFormInput> = data => {
-     
+
+  const onSubmit: SubmitHandler<IFormInput> = data => {   
     adminLogin({
         email:data.email,
         password:data.password
     })
   };
+
+  useEffect(()=>{
+    if(user && (user.role == 'admin' || user.role == 'super-admin')){
+        navigate('/dashboard');
+    }
+},[user]);
+
   useEffect(()=>{
       if(isSuccess){
            navigate('/dashboard');
