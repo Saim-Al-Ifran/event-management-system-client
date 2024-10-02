@@ -11,7 +11,7 @@ const PrivateRoutes:React.FC<userProps > = ({ children }) => {
     const {isUser} = useUserRoles();
     const isAuthenticated = Cookies.get('token');
     const location = useLocation();
-    
+ 
     if (isAuthenticated && isUser === false  ) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -19,6 +19,12 @@ const PrivateRoutes:React.FC<userProps > = ({ children }) => {
             </div>
         );
     }
+
+    if (!isUser) {
+        return <Navigate to="/" />;
+      }
+    
+
     if (isAuthenticated && isUser) {
         return children;
     }

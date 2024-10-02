@@ -8,9 +8,12 @@ interface AdminOrSuperAdminProps {
 }
 
 const AdminOrSuperAdmin:React.FC<AdminOrSuperAdminProps > = ({ children }) => {
-    const {isSuperAdmin, isAdmin } = useUserRoles();
+    const {isSuperAdmin, isAdmin,isUser} = useUserRoles();
     const isAuthenticated = Cookies.get('token');
     const location = useLocation();
+    if(isUser){
+       return  <Navigate to="/"></Navigate>
+    }
     
     if (isAuthenticated && isAdmin === false && isSuperAdmin === false   ) {
         return (

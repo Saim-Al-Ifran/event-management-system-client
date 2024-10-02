@@ -26,11 +26,14 @@ const AdminLogin: React.FC = () => {
     })
   };
 
-  useEffect(()=>{
-    if(user && (user.role == 'admin' || user.role == 'super-admin')){
-        navigate('/dashboard');
+  useEffect(() => {
+    if (user && user.role === 'user') {
+      navigate('/');
     }
-},[user]);
+    if (user && (user.role === 'admin' || user.role === 'super-admin')) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   useEffect(()=>{
       if(isSuccess){
