@@ -4,10 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { userLoggedOut } from '../../features/auth/authSlice';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
+import avatar from '../../../public/images/avatar.png'
 
-const UserProfile:React.FC = ({user}) => {
+const UserProfile:React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userData = useSelector((state:RootState)=>state.auth);
   const handleLogout = async() => {
     Cookies.remove('token');
     localStorage.removeItem('user');
@@ -15,6 +19,8 @@ const UserProfile:React.FC = ({user}) => {
     toast.success("successfully logout");
     navigate('/');    
   };
+  console.log(userData?.user); 
+  
   return (
     <>
        <div className="dropdown dropdown-end">
@@ -26,7 +32,7 @@ const UserProfile:React.FC = ({user}) => {
             <div className="w-10 rounded-full">
               <img
                 alt="User avatar"
-                src={user?.image}
+                src={userData?.user?.image || avatar }
               />
             </div>
           </div>
@@ -34,7 +40,7 @@ const UserProfile:React.FC = ({user}) => {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
-            <li><strong>{user?.username}</strong></li>
+            <li><strong>{userData?.user?.name}</strong></li>
             <li>
               
               <a className="justify-between">

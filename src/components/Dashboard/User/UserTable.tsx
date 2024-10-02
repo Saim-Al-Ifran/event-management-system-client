@@ -22,6 +22,7 @@ import { ClipLoader, FadeLoader } from "react-spinners";
 import { RootState } from "../../../app/store";
 import Swal from "sweetalert2";
 import { User } from "../../../types/types";
+import avatar from '../../../../public/images/avatar.png'
 
 const TABLE_HEAD = ["Member", "Role", "Status", "Number", "Actions"];
 
@@ -197,7 +198,7 @@ function UsersTable() {
                     <tr key={index}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
-                          <Avatar src={image} alt={username} size="sm"  {...(undefined as any)}/>
+                          <Avatar src={image|| avatar} alt={username} size="sm"  {...(undefined as any)}/>
                           <div>
                             <Typography
                               variant="small"

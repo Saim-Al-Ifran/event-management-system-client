@@ -88,7 +88,7 @@ const Navbar: React.FC = () => {
           </button>
         </div> 
         {getUser?.user?.role === 'user' ? (
-           <UserProfile user={getUser?.user}/>
+           <UserProfile />
         ) : (
           <div className="hidden md:flex w-3/12 justify-end">
           <Link to="/login">

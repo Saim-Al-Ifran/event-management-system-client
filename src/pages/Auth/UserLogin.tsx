@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Card, CardBody, Input, Button, Typography } from '@material-tailwind/react';
 import { FcGoogle } from 'react-icons/fc';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import app from '../../firebase/firebase.config';
 import toast from 'react-hot-toast';
@@ -13,15 +13,18 @@ import { RootState } from '../../app/store';
 import { useDispatch } from 'react-redux';
 import { userLoggedIn, userLoggedOut } from '../../features/auth/authSlice';
 import Cookies from 'js-cookie';
+ 
 
 const TOKEN_LIFETIME_MS = 60 * 60 * 1000;  
 
 const UserLogin: React.FC = () => {
+  
   const auth = getAuth(app);
   const getUser = useSelector((state: RootState) => state.auth);
   const { user } = getUser;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation() ;
   const [userLogin, { isSuccess, isError, error: loginError }] = useUserLoginMutation();
   const [saveFirebaseUser] = useSaveFirebaseUserMutation();
   
@@ -66,6 +69,8 @@ const UserLogin: React.FC = () => {
       const user = result.user;
 
       if (result) {
+
+        const accessToken = await user.getIdToken();
         await saveFirebaseUser({
           uid: user.uid,
           username: user.displayName,
@@ -75,9 +80,9 @@ const UserLogin: React.FC = () => {
         });
         
         dispatch(userLoggedIn({
-          accessToken: user?.accessToken,
+          accessToken: accessToken,
           user: {
-             username: user.displayName,
+             name: user.displayName,
              email: user.email,
              phoneNumber: user.phoneNumber,
              role: 'user',
@@ -88,7 +93,7 @@ const UserLogin: React.FC = () => {
         const expirationTime = new Date();
         expirationTime.setTime(expirationTime.getTime() + TOKEN_LIFETIME_MS);
 
-        Cookies.set('token', JSON.stringify({ accessToken: user?.accessToken }), { expires: expirationTime });
+        Cookies.set('token', JSON.stringify({ accessToken: accessToken }), { expires: expirationTime });
         localStorage.setItem('user', JSON.stringify(user));
 
         // Automatically log out after 1 hour
