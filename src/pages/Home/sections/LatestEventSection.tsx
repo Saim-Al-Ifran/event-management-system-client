@@ -66,6 +66,7 @@ const LatestEventsSection: React.FC = () => {
 
             return (
               <EventCard
+                id={event._id}
                 key={index}
                 date={date}
                 month={month}

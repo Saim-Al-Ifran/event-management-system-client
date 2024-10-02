@@ -7,54 +7,97 @@ import app from '../../firebase/firebase.config';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { LoginFormData } from '../../types/types';
-import { useUserLoginMutation } from '../../features/auth/authApi';
+import { useSaveFirebaseUserMutation, useUserLoginMutation } from '../../features/auth/authApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
+import { useDispatch } from 'react-redux';
+import { userLoggedIn, userLoggedOut } from '../../features/auth/authSlice';
+import Cookies from 'js-cookie';
+
+const TOKEN_LIFETIME_MS = 60 * 60 * 1000;  
 
 const UserLogin: React.FC = () => {
-
   const auth = getAuth(app);
-  const getUser = useSelector((state: RootState)=>state.auth);
-  const {user} = getUser;
-  const [userLogin, { isSuccess, isError, error: loginError }] = useUserLoginMutation()
+  const getUser = useSelector((state: RootState) => state.auth);
+  const { user } = getUser;
   const navigate = useNavigate();
-  const { register: loginForm, handleSubmit, formState: { errors } } = useForm< LoginFormData >();
-
-  useEffect(()=>{
-      if(user && user.role == 'user'){
-          navigate('/');
-      }
-  },[user]);
+  const dispatch = useDispatch();
+  const [userLogin, { isSuccess, isError, error: loginError }] = useUserLoginMutation();
+  const [saveFirebaseUser] = useSaveFirebaseUserMutation();
+  
+  const { register: loginForm, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  
+  useEffect(() => {
+    if (user && user.role === 'user') {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     if (isSuccess) {
       navigate('/');
-      toast.success('Login successfull');
+      toast.success('Login successful');
     }
     if (isError) {
       toast.error(loginError?.data?.message);
     }
-  }, [isSuccess, isError, navigate]);
+  }, [isSuccess, isError, navigate, loginError]);
 
-  const onSubmit = async(data: any) => {
-         await userLogin({
-            email:data.email,
-            password:data.password
-         })
+  const clearTokenAndUserData = () => {
+    Cookies.remove('token');
+    localStorage.removeItem('user');
+    dispatch(userLoggedOut());
+    toast('Session expired. You have been logged out.');
   };
 
-  const handleGoogleLogin = async (e:React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (data: any) => {
+    await userLogin({
+      email: data.email,
+      password: data.password,
+    });
+  };
+
+  const handleGoogleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      if (result) {
-        console.log(user);
-        
-      }
 
+      if (result) {
+        await saveFirebaseUser({
+          uid: user.uid,
+          username: user.displayName,
+          email: user.email,
+          image: user.photoURL,
+          phoneNumber: user.phoneNumber,
+        });
+        
+        dispatch(userLoggedIn({
+          accessToken: user?.accessToken,
+          user: {
+             username: user.displayName,
+             email: user.email,
+             phoneNumber: user.phoneNumber,
+             role: 'user',
+             image: user.photoURL
+          },
+        }));
+
+        const expirationTime = new Date();
+        expirationTime.setTime(expirationTime.getTime() + TOKEN_LIFETIME_MS);
+
+        Cookies.set('token', JSON.stringify({ accessToken: user?.accessToken }), { expires: expirationTime });
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Automatically log out after 1 hour
+        setTimeout(() => {
+          clearTokenAndUserData();
+        }, TOKEN_LIFETIME_MS);
+
+        navigate(location?.state ? location.state : '/');
+      }
     } catch (error) {
       console.error('Google login error:', error);
       toast.error('Google login failed');

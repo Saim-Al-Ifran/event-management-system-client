@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const getUser = useSelector((state: RootState)=>state.auth);
-  console.log(getUser);
+  console.log(getUser?.role); 
   
   const isActive = (path: string) => {
     return location.pathname === path ? 'border-opacity-100 text-[#506aff]' : 'border-opacity-0';
@@ -86,9 +86,9 @@ const Navbar: React.FC = () => {
               ></path>
             </svg>
           </button>
-        </div>
+        </div> 
         {getUser?.user?.role === 'user' ? (
-           <UserProfile/>
+           <UserProfile user={getUser?.user}/>
         ) : (
           <div className="hidden md:flex w-3/12 justify-end">
           <Link to="/login">

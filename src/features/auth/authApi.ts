@@ -62,10 +62,18 @@ const authApi = apiSlice.injectEndpoints({
     endpoints: (builder: EndpointBuilder<BaseQueryFn, string, string>) => ({
         adminLogin: createLoginMutation(builder, '/event-administration/login'),
         userLogin: createLoginMutation(builder, '/event-management/login'),
+        saveFirebaseUser:builder.mutation({
+             query:(data)=>({
+                url:'/event-management/firebase-login',
+                method:'POST',
+                body:data
+             })
+        })
     }),
 });
 
 export const { 
     useAdminLoginMutation,
     useUserLoginMutation,
+    useSaveFirebaseUserMutation
 } = authApi;
