@@ -78,25 +78,26 @@ const UserLogin: React.FC = () => {
           image: user.photoURL,
           phoneNumber: user.phoneNumber,
         });
-        
+
+        const  loggedInUser = {
+          name: user.displayName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          role: 'user',
+          image: user.photoURL
+       }
         dispatch(userLoggedIn({
           accessToken: accessToken,
-          user: {
-             name: user.displayName,
-             email: user.email,
-             phoneNumber: user.phoneNumber,
-             role: 'user',
-             image: user.photoURL
-          },
+          user: loggedInUser,
         }));
 
         const expirationTime = new Date();
         expirationTime.setTime(expirationTime.getTime() + TOKEN_LIFETIME_MS);
 
         Cookies.set('token', JSON.stringify({ accessToken: accessToken }), { expires: expirationTime });
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(loggedInUser));
 
-        // Automatically log out after 1 hour
+    
         setTimeout(() => {
           clearTokenAndUserData();
         }, TOKEN_LIFETIME_MS);

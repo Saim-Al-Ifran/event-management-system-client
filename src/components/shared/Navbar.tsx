@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const getUser = useSelector((state: RootState)=>state.auth);
-  console.log(getUser?.role); 
+  console.log(getUser);  
   
   const isActive = (path: string) => {
     return location.pathname === path ? 'border-opacity-100 text-[#506aff]' : 'border-opacity-0';
