@@ -84,7 +84,8 @@ const UserLogin: React.FC = () => {
           email: user.email,
           phoneNumber: user.phoneNumber,
           role: 'user',
-          image: user.photoURL
+          image: user.photoURL,
+          isFirebaseUser:true
        }
         dispatch(userLoggedIn({
           accessToken: accessToken,

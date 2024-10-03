@@ -38,6 +38,9 @@ const userApi = apiSlice.injectEndpoints({
                 getUrlForRole(role, entity, undefined, page, limit, search),
             providesTags:['Users']
         }),
+        getUserProfile:builder.query({
+             query:()=>'/user-dasboard/user/profile'
+        }),
         getUserById: builder.query<SingleUserResponse,UserRequest>({
             query: ({ role, entity, id }) => 
                 getUrlForRole(role, entity, id),
@@ -91,7 +94,8 @@ export const {
     useGetUsersQuery,
     useCreateUserMutation,
     useRegisterMutation,
+    useGetUserProfileQuery,
     useGetUserByIdQuery,
     useUpdateUserMutation,
-    useDeleteUserMutation
+    useDeleteUserMutation,
 } = userApi;
