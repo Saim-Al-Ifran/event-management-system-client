@@ -24,6 +24,8 @@ import AboutUs from '../pages/AboutUs/AboutUs';
 import AdminOrSuperAdmin from './AdminOrSuperAdmin';
 import DashboardHome from '../pages/Dashboard/DashboardHome/DashboardHome';
 import EventDetailsPage from '../pages/Events/EventDetailsPage';
+import ProfileForm from '../components/Profile/ProfileForm';
+import PrivateRoutes from './PrivateRoutes';
  
 const AppRouter = () => {
   return (
@@ -39,6 +41,12 @@ const AppRouter = () => {
                       <Route path='/categories' element={<Categories/>}/>
                       <Route path='/about' element={<AboutUs/>}/>
                       <Route path='/contact' element={<ContactUs/>} />
+                      <Route path='/profile' element={
+                        <PrivateRoutes>
+                          <ProfileForm/>
+                        </PrivateRoutes>
+                         
+                       } />
              </Route>
         </Routes>
           <Routes>

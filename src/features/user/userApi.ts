@@ -39,7 +39,16 @@ const userApi = apiSlice.injectEndpoints({
             providesTags:['Users']
         }),
         getUserProfile:builder.query({
-             query:()=>'/user-dasboard/user/profile'
+             query:()=>'/user-dasboard/user/profile',
+             providesTags: ['Profile']
+        }),
+        updateProfileImage:builder.mutation({
+            query:(data)=>({
+                url:'/user-dasboard/user/upload-profile-image',
+                method:'PATCH',
+                body:data
+            }),
+            invalidatesTags: ['Profile']
         }),
         getUserById: builder.query<SingleUserResponse,UserRequest>({
             query: ({ role, entity, id }) => 
@@ -87,13 +96,14 @@ const userApi = apiSlice.injectEndpoints({
             invalidatesTags:['Users']
         })
     }),
-    tagTypes:['Users','User']
+    tagTypes:['Users','User','Profile']
 });
 
 export const {
     useGetUsersQuery,
     useCreateUserMutation,
     useRegisterMutation,
+    useUpdateProfileImageMutation,
     useGetUserProfileQuery,
     useGetUserByIdQuery,
     useUpdateUserMutation,

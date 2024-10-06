@@ -79,3 +79,10 @@ export interface LoginFormData {
   email: string;
   password: string;
 }
+
+export interface ProfileData {
+  username: string;
+  email: string;
+  phoneNumber: string;
+  image: string;
+}

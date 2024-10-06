@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import avatar from '../../../public/images/avatar.png';
 import { useGetUserProfileQuery } from '../../features/user/userApi';
 import { userLoggedOut } from '../../features/auth/authSlice';
+import { Link } from 'react-router-dom';
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +21,8 @@ const UserProfile: React.FC = () => {
     toast.success('Successfully logged out');
     navigate('/');
   };
-
+  
+  console.log(userData);
   return (
     <>
       {isLoading ? (
@@ -46,10 +48,10 @@ const UserProfile: React.FC = () => {
               <strong>{username}</strong>
             </li>
             <li>
-              <a className="justify-between">
+              <Link to="/profile" className="justify-between">
                 Profile
                 <span className="badge">New</span>
-              </a>
+              </Link>
             </li>
             <li>
               <button onClick={handleLogout} className="btn-logout">
