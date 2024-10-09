@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import avatar from '../../../public/images/avatar.png';
-import { useGetUserProfileQuery, useUpdateProfileImageMutation } from '../../features/user/userApi';
+import { useGetUserProfileQuery, useUpdateProfileImageMutation, useUpdateUserProfileMutation } from '../../features/user/userApi';
 import { ProfileData } from '../../types/types';
 import { Button } from '@material-tailwind/react';
 import toast from 'react-hot-toast';
@@ -13,19 +13,25 @@ const ProfileForm: React.FC = () => {
     image: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { data: userData, isSuccess  } = useGetUserProfileQuery();
-  const [updateProfileImage,{isLoading:updateLoading,isSuccess:isUpdateSuccess,error}] = useUpdateProfileImageMutation();
+  const { data: userData, isSuccess } = useGetUserProfileQuery();
+  const [updateProfileImage, { isLoading: updateLoading, isSuccess: isUpdateSuccess }] = useUpdateProfileImageMutation();
+  const [updateUserProfile, { isLoading: updateUserLoading, isSuccess: isUserSuccess, error }] = useUpdateUserProfileMutation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>('');
-  console.log(error);
-  
-  useEffect(()=>{
-       if(isUpdateSuccess){
-           toggleModal();
-           toast.success("Successfully updated profile image")
-       }
-  },[isUpdateSuccess])
-   
+
+  useEffect(() => {
+    if (isUserSuccess) {
+      toast.success("Updated profile successfully");
+    }
+  }, [isUserSuccess]);
+
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      toggleModal();
+      toast.success("Successfully updated profile image");
+    }
+  }, [isUpdateSuccess]);
+
   useEffect(() => {
     if (isSuccess && userData) {
       setProfileData({
@@ -35,12 +41,15 @@ const ProfileForm: React.FC = () => {
         image: userData?.profile.image || '',
       });
       setImagePreview(userData?.profile.image || avatar);
-      
     }
   }, [isSuccess, userData]);
 
-  console.log(profileData.image);
-  
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to update profile");
+    }
+  }, [error]);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -49,55 +58,55 @@ const ProfileForm: React.FC = () => {
     }));
   };
 
-  // Handle image change inside modal
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const fileUrl = URL.createObjectURL(file);
-      setImagePreview(fileUrl);   
-      setSelectedFile(file); 
+      setImagePreview(fileUrl);
+      setSelectedFile(file);
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log('Updated Profile Data:', profileData);
-    // API call to update profile data
+    try {
+      await updateUserProfile({
+        username: profileData.username,
+        phoneNumber: profileData.phoneNumber,
+      });
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
   };
 
-  // Handle modal visibility
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+    if (!isModalOpen) setImagePreview(profileData.image || avatar);
+  };
 
-  // Save the new image only after confirming in the modal
   const handleSaveImage = async () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append('image', selectedFile);
       await updateProfileImage(formData);
-       
     }
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
- 
       <h2 className="text-2xl font-bold mb-6">Update Profile</h2>
-      
-      {/* Profile Image */}
+
       <div className="flex flex-col items-center mb-6">
         <img
           src={profileData.image ? profileData.image : avatar}
           alt="Profile"
           className="w-32 h-32 rounded-full object-cover mb-4"
         />
-        <Button size='sm' onClick={toggleModal} {...(undefined as any )}>
-           Change Image
+        <Button size='sm' onClick={toggleModal}  {...(undefined as any)}>
+          Change Image
         </Button>
- 
       </div>
 
-      {/* Form Fields */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -144,8 +153,9 @@ const ProfileForm: React.FC = () => {
 
         <div className="mt-6">
           <Button
+            loading={updateUserLoading}
             type="submit"
-            className="px-4 py-2 bg-[#3F51B5] text-white rounded-md  "
+            className="px-4 py-2 bg-[#3F51B5] text-white rounded-md"
             {...(undefined as any)}
           >
             Update Profile
@@ -153,14 +163,13 @@ const ProfileForm: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal for Changing Profile Image */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-md shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">Change Profile Image</h2>
             <div className="flex flex-col items-center mb-6">
               <img
-                src={imagePreview  }
+                src={imagePreview}
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover mb-4"
               />
@@ -182,7 +191,7 @@ const ProfileForm: React.FC = () => {
               <Button
                 loading={updateLoading}
                 onClick={handleSaveImage}
-                className="px-4 py-2 bg-[#3F51B5] text-white rounded-md  "
+                className="px-4 py-2 bg-[#3F51B5] text-white rounded-md"
                 {...(undefined as any)}
               >
                 Save

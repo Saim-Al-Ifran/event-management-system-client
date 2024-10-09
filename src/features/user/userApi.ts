@@ -42,6 +42,15 @@ const userApi = apiSlice.injectEndpoints({
              query:()=>'/user-dasboard/user/profile',
              providesTags: ['Profile']
         }),
+        updateUserProfile:builder.mutation({
+             query:(data)=>({
+                 url:'/user-dasboard/user/profile',
+                 method:'PUT',
+                 body:data
+             }),
+             invalidatesTags:['Profile']
+        })
+        ,
         updateProfileImage:builder.mutation({
             query:(data)=>({
                 url:'/user-dasboard/user/upload-profile-image',
@@ -104,6 +113,7 @@ export const {
     useCreateUserMutation,
     useRegisterMutation,
     useUpdateProfileImageMutation,
+    useUpdateUserProfileMutation,
     useGetUserProfileQuery,
     useGetUserByIdQuery,
     useUpdateUserMutation,
