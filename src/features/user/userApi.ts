@@ -96,6 +96,13 @@ const userApi = apiSlice.injectEndpoints({
             ]
 
         }),
+        changePassword:builder.mutation({
+            query:(data)=>({
+                url:'/user-dasboard/user/change-password',
+                method:'PUT',
+                body:data
+            }),
+        }),
 
         deleteUser: builder.mutation<void, UserDeleteRequest>({
             query: ({ role, entity, id }) => ({
@@ -117,5 +124,6 @@ export const {
     useGetUserProfileQuery,
     useGetUserByIdQuery,
     useUpdateUserMutation,
+    useChangePasswordMutation,
     useDeleteUserMutation,
 } = userApi;

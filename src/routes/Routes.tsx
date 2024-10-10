@@ -26,6 +26,7 @@ import DashboardHome from '../pages/Dashboard/DashboardHome/DashboardHome';
 import EventDetailsPage from '../pages/Events/EventDetailsPage';
 import ProfileForm from '../components/Profile/ProfileForm';
 import PrivateRoutes from './PrivateRoutes';
+import ChangePasswordForm from '../components/Profile/ChangePasswordForm';
  
 const AppRouter = () => {
   return (
@@ -44,6 +45,12 @@ const AppRouter = () => {
                       <Route path='/profile' element={
                         <PrivateRoutes>
                           <ProfileForm/>
+                        </PrivateRoutes>
+                         
+                       } />
+                      <Route path='/change-password' element={
+                        <PrivateRoutes>
+                           <ChangePasswordForm/>
                         </PrivateRoutes>
                          
                        } />

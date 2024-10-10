@@ -22,7 +22,7 @@ const UserProfile: React.FC = () => {
     navigate('/');
   };
   
-  console.log(userData);
+  console.log(userData?.profile?.firebaseUID);
   return (
     <>
       {isLoading ? (
@@ -53,6 +53,14 @@ const UserProfile: React.FC = () => {
                 <span className="badge">New</span>
               </Link>
             </li>
+            {!userData?.profile?.firebaseUID && (
+                <li>
+                <Link to="/change-password" className="justify-between">
+                    Change password
+                </Link>
+              </li>
+            ) }
+   
             <li>
               <button onClick={handleLogout} className="btn-logout">
                 Logout
