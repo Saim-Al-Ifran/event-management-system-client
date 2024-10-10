@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Input, Button, Typography } from '@material-tailwind/react';
 import { FcGoogle } from 'react-icons/fc';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { RootState } from '../../app/store';
 import { useDispatch } from 'react-redux';
 import { userLoggedIn, userLoggedOut } from '../../features/auth/authSlice';
 import Cookies from 'js-cookie';
+import { CircleLoader  } from 'react-spinners';
  
 
 const TOKEN_LIFETIME_MS = 60 * 60 * 1000;  
@@ -25,8 +26,9 @@ const UserLogin: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation() ;
-  const [userLogin, { isSuccess, isError, error: loginError }] = useUserLoginMutation();
+  const [userLogin, { isSuccess, isError,isLoading, error: loginError }] = useUserLoginMutation();
   const [saveFirebaseUser] = useSaveFirebaseUserMutation();
+  const [isLoadingGoogle,setIsLoadingGoogle] = useState(false);
   
   const { register: loginForm, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
   
@@ -62,7 +64,7 @@ const UserLogin: React.FC = () => {
 
   const handleGoogleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsLoadingGoogle(true);
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -108,6 +110,7 @@ const UserLogin: React.FC = () => {
     } catch (error) {
       console.error('Google login error:', error);
       toast.error('Google login failed');
+      setIsLoadingGoogle(false);
     }
   };
 
@@ -174,8 +177,13 @@ const UserLogin: React.FC = () => {
               fullWidth
               className="mb-4 bg-[#3F51B5] flex items-center justify-center"
               {...(undefined as any)}
+              disabled={isLoading || isLoadingGoogle}
             >
-              Login
+                {isLoading || isLoadingGoogle  ? (
+                <CircleLoader color="#ffffff" size={24} />
+              ) : (
+                'Login'
+              )}
             </Button>
           </form>
 
@@ -190,6 +198,7 @@ const UserLogin: React.FC = () => {
             fullWidth
             className="flex items-center justify-center mb-4 border-[#3F51B5] text-[#3F51B5] hover:bg-[#3F51B5] hover:text-white transition-all"
             {...(undefined as any)}
+            disabled={isLoading || isLoadingGoogle}
           >
             <FcGoogle size={24} className="mr-2" />
             Login with Google
