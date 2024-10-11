@@ -1,10 +1,13 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation} from 'react-router-dom';
 import { useGetSingleEventQuery } from '../../features/Events/eventsApi';
 import { Breadcrumbs, Typography, Button, Chip } from '@material-tailwind/react';
  
 import 'react-loading-skeleton/dist/skeleton.css'; // Import the styles for react-loading-skeleton
 import SingleEventSkeletonLoading from '../../components/SkeletonReloading/singleEventLoading';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
 
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
@@ -17,7 +20,12 @@ const formatDateParts = (dateString: string) => {
 const EventDetailsPage: React.FC = () => {
   const { id } = useParams<string>();
   const { data: event, isLoading, error } = useGetSingleEventQuery(id);
-
+  const getUser = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
+  const navigateLocation = useLocation();
+  console.log(getUser);
+  
+  
   if (isLoading) {
     return (
         <SingleEventSkeletonLoading/>
@@ -34,6 +42,17 @@ const EventDetailsPage: React.FC = () => {
 
   const { title, description, date, image, location, capacity, category, price, status } = event;
   const { date: day, month, year } = formatDateParts(date);
+
+  const  handleClick = ()=> {
+ 
+       
+       if(!getUser?.accessToken && !getUser?.user){
+           navigate(`/login?redirect=${navigateLocation.pathname}`);
+       }else{
+          toast.success('Event added to cart') 
+       }
+      
+  }
 
   return (
     <>
@@ -124,7 +143,13 @@ const EventDetailsPage: React.FC = () => {
             </div>
 
             <div className="flex space-x-4 mt-6">
-              <Button variant="filled" className=" bg-[#3F51B5]" size="lg"  {...(undefined as any)}>
+              <Button
+                  variant="filled"
+                  className=" bg-[#3F51B5]"
+                  size="lg" 
+                  {...(undefined as any)}
+                  onClick={handleClick}
+               >
                 Book Tickets
               </Button>
               <Link to='/events' >

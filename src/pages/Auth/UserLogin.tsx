@@ -29,18 +29,22 @@ const UserLogin: React.FC = () => {
   const [userLogin, { isSuccess, isError,isLoading, error: loginError }] = useUserLoginMutation();
   const [saveFirebaseUser] = useSaveFirebaseUserMutation();
   const [isLoadingGoogle,setIsLoadingGoogle] = useState(false);
-  
   const { register: loginForm, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  
+  const searchParams = new URLSearchParams(location.search);
+  const redirectTo = searchParams.get('redirect') || '/';
+  console.log(redirectTo);
   
   useEffect(() => {
     if (user && user.role === 'user') {
-      navigate('/');
+      navigate(redirectTo);
     }
   }, [user, navigate]);
 
   useEffect(() => {
     if (isSuccess) {
-      navigate('/');
+ 
+      navigate(redirectTo);
       toast.success('Login successful');
     }
     if (isError) {
