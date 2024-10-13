@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link, useNavigate, useLocation} from 'react-router-dom';
 import { useGetSingleEventQuery } from '../../features/Events/eventsApi';
 import { Breadcrumbs, Typography, Button, Chip } from '@material-tailwind/react';
- 
-import 'react-loading-skeleton/dist/skeleton.css'; // Import the styles for react-loading-skeleton
+import 'react-loading-skeleton/dist/skeleton.css';  
 import SingleEventSkeletonLoading from '../../components/SkeletonReloading/singleEventLoading';
-import toast from 'react-hot-toast';
+ 
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
+import PaymentModal from '../../components/Checkout/PaymentModal';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+const stripePromise = loadStripe(import.meta.env.VITE_Payment_Gateway_PK);
 
 const formatDateParts = (dateString: string) => {
   const eventDate = new Date(dateString);
@@ -23,7 +26,8 @@ const EventDetailsPage: React.FC = () => {
   const getUser = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const navigateLocation = useLocation();
-  console.log(getUser);
+  const [openModal, setOpenModal] = useState(false);
+   
   
   
   if (isLoading) {
@@ -44,15 +48,18 @@ const EventDetailsPage: React.FC = () => {
   const { date: day, month, year } = formatDateParts(date);
 
   const  handleClick = ()=> {
- 
-       
        if(!getUser?.accessToken && !getUser?.user){
            navigate(`/login?redirect=${navigateLocation.pathname}`);
        }else{
-          toast.success('Event added to cart') 
+          setOpenModal(true);
        }
       
   }
+
+  const handlePaymentSubmit = () => {
+
+    setOpenModal(false);  
+  };
 
   return (
     <>
@@ -161,6 +168,15 @@ const EventDetailsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+       <Elements stripe={stripePromise}>
+          <PaymentModal 
+              openModal={openModal}
+              setOpenModal={setOpenModal}
+              handlePaymentSubmit={handlePaymentSubmit}
+          />
+       </Elements>
+
     </>
   );
 };

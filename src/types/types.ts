@@ -86,3 +86,10 @@ export interface ProfileData {
   phoneNumber: string;
   image: string;
 }
+
+
+export interface CustomModalProps {
+  openModal: boolean;  
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>; 
+  handlePaymentSubmit: () => void;  
+}
