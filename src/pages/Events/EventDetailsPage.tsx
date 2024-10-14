@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation} from 'react-router-dom';
 import { useGetSingleEventQuery } from '../../features/Events/eventsApi';
 import { Breadcrumbs, Typography, Button, Chip } from '@material-tailwind/react';
 import 'react-loading-skeleton/dist/skeleton.css';  
-import SingleEventSkeletonLoading from '../../components/SkeletonReloading/singleEventLoading';
+import SingleEventSkeletonLoading from '../../components/SkeletonReloading/SingleEventLoading';
  
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
@@ -156,6 +156,7 @@ const EventDetailsPage: React.FC = () => {
                   size="lg" 
                   {...(undefined as any)}
                   onClick={handleClick}
+                  disabled={status !== 'active'}
                >
                 Book Tickets
               </Button>
