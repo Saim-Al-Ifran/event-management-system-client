@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css'; 
-import Swal from 'sweetalert2'; // Import SweetAlert
+import Swal from 'sweetalert2';  
 import { useGetUserBookingsQuery, useRequestedToDeleteBookingMutation } from '../../features/Bookings/bookingsApi';
 import { UserBooking } from '../../types/api-types';
-import { FaSpinner } from 'react-icons/fa'; // Import spinner icon (you can use any spinner)
+import { FaSpinner } from 'react-icons/fa';  
 
 const MyBookings: React.FC = () => {
   const { data: bookingsData, isLoading } = useGetUserBookingsQuery();
   const [requestedToDeleteBooking, { isLoading: isFetching, isSuccess }] = useRequestedToDeleteBookingMutation();
   
-  // Local state to track which booking is being requested for deletion
   const [deletingBookingId, setDeletingBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isSuccess) {
       Swal.fire('Requested!', 'Your request to delete this booking has been sent.', 'success');
-      // Reset deletingBookingId after the request is successful
       setDeletingBookingId(null);
     }
   }, [isSuccess]);
@@ -34,13 +32,11 @@ const MyBookings: React.FC = () => {
       });
 
       if (result.isConfirmed) {
-        // Set the current booking being requested to delete
         setDeletingBookingId(bookingId);
-        // Send request to delete the booking
         await requestedToDeleteBooking(bookingId);
       }
     } catch (error) {
-      // Handle error if the request fails
+     
       Swal.fire('Error!', 'There was a problem requesting the deletion.', 'error');
       console.error('Failed to request booking deletion:', error);
     }
@@ -93,12 +89,11 @@ const MyBookings: React.FC = () => {
               ))
             ) : (
               bookingsData?.bookings?.map((booking: UserBooking) => {
-                // Destructure event data from the booking
                 const { eventId: { image, title, date, location }, attendeEmail, amount, requestToDelete, _id } = booking;
 
                 return (
                   <tr key={_id}>
-                    {/* Event Image */}
+ 
                     <td>
                       <img
                         src={image}
@@ -106,31 +101,25 @@ const MyBookings: React.FC = () => {
                         className="w-16 h-16 object-cover rounded"
                       />
                     </td>
-
-                    {/* Event Title */}
+ 
                     <td>{title}</td>
-
-                    {/* Event Date */}
+ 
                     <td>{new Date(date).toLocaleDateString()}</td>
-
-                    {/* Event Location */}
+ 
                     <td>{location}</td>
-
-                    {/* Attendee Email */}
+ 
                     <td>{attendeEmail}</td>
-
-                    {/* Amount Paid */}
+ 
                     <td>${amount}</td>
-
-                    {/* Request to Delete Booking */}
+ 
                     <td className="text-center">
                       <button
                         className={`btn ${requestToDelete ? 'btn-disabled' : 'btn-error'} btn-sm flex items-center`}
                         onClick={() => handleRequestToDelete(_id)}
-                        disabled={requestToDelete || isFetching || deletingBookingId === _id}  // Disable button when request is in progress or already requested
+                        disabled={requestToDelete || isFetching || deletingBookingId === _id} 
                       >
                         {deletingBookingId === _id ? (
-                          <FaSpinner className="animate-spin mr-2" /> // Show loading spinner for specific booking
+                          <FaSpinner className="animate-spin mr-2" />  
                         ) : null}
                         {requestToDelete ? 'Requested' : 'Request Delete'}
                       </button>
