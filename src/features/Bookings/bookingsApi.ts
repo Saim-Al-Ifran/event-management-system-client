@@ -18,9 +18,16 @@ const bookingsApi = apiSlice.injectEndpoints({
             providesTags:['Booking']
         }),
         getUserBookings:builder.query({
-               query:()=>'/event-management/events/bookings'
+               query:()=>'/event-management/events/bookings',
+               providesTags:['Booking']
         }),
-
+        requestedToDeleteBooking:builder.mutation({
+            query: (id: string) => ({
+                url: `/event-management/events/bookings/${id}/request-cancellation`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: ['Booking']
+        }),
         deleteRequestedBooking: builder.mutation<void, string>({
             query: (id: string) => ({
                 url: `/event-management/events/bookings/${id}/delete_requested_booking`,
@@ -35,5 +42,6 @@ const bookingsApi = apiSlice.injectEndpoints({
 export const {
      useGetAllBookingsQuery,
      useDeleteRequestedBookingMutation,
-     useGetUserBookingsQuery
+     useGetUserBookingsQuery,
+     useRequestedToDeleteBookingMutation
 } = bookingsApi;
