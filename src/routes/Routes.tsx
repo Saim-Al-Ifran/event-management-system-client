@@ -27,6 +27,7 @@ import EventDetailsPage from '../pages/Events/EventDetailsPage';
 import ProfileForm from '../components/Profile/ProfileForm';
 import PrivateRoutes from './PrivateRoutes';
 import ChangePasswordForm from '../components/Profile/ChangePasswordForm';
+import MyBookings from '../pages/MyBookings/MyBookings';
  
 const AppRouter = () => {
   return (
@@ -54,6 +55,13 @@ const AppRouter = () => {
                         </PrivateRoutes>
                          
                        } />
+                      <Route path='/my_bookings' element={
+                        <PrivateRoutes>
+                             <MyBookings/>
+                        </PrivateRoutes>
+                         
+                       } />
+
              </Route>
         </Routes>
           <Routes>

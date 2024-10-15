@@ -53,6 +53,11 @@ const UserProfile: React.FC = () => {
                 <span className="badge">New</span>
               </Link>
             </li>
+            <li>
+              <Link to="/my_bookings" className="justify-between">
+                  My Bookings
+              </Link>
+            </li>
             {!userData?.profile?.firebaseUID && (
                 <li>
                 <Link to="/change-password" className="justify-between">

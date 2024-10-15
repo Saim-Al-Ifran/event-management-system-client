@@ -145,3 +145,14 @@ export interface SingleUserResponse{
   message:string;
   user:User;
 }
+
+
+export interface UserBooking {
+  _id: string;
+  eventId: Event;
+  attendeEmail: string;
+  requestToDelete: boolean;
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+}

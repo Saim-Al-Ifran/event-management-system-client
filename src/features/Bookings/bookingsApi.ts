@@ -17,6 +17,9 @@ const bookingsApi = apiSlice.injectEndpoints({
             },
             providesTags:['Booking']
         }),
+        getUserBookings:builder.query({
+               query:()=>'/event-management/events/bookings'
+        }),
 
         deleteRequestedBooking: builder.mutation<void, string>({
             query: (id: string) => ({
@@ -29,4 +32,8 @@ const bookingsApi = apiSlice.injectEndpoints({
     tagTypes: ['Booking'],
 })
 
-export const { useGetAllBookingsQuery, useDeleteRequestedBookingMutation } = bookingsApi;
+export const {
+     useGetAllBookingsQuery,
+     useDeleteRequestedBookingMutation,
+     useGetUserBookingsQuery
+} = bookingsApi;

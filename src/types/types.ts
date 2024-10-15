@@ -87,6 +87,15 @@ export interface ProfileData {
   image: string;
 }
 
+export interface Booking {
+  _id: string;
+  eventId: Event;
+  attendeEmail: string;
+  requestToDelete: boolean;
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface CustomModalProps {
   openModal: boolean;  
