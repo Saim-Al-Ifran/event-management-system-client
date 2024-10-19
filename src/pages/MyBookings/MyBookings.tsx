@@ -36,7 +36,6 @@ const MyBookings: React.FC = () => {
         await requestedToDeleteBooking(bookingId);
       }
     } catch (error) {
-     
       Swal.fire('Error!', 'There was a problem requesting the deletion.', 'error');
       console.error('Failed to request booking deletion:', error);
     }
@@ -46,54 +45,34 @@ const MyBookings: React.FC = () => {
     <div className="container mx-auto mt-8 mb-8">
       <h2 className="text-2xl font-semibold mb-4 text-center">My Bookings</h2>
 
-      <div className="overflow-x-auto">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Event Title</th>
-              <th>Date</th>
-              <th>Location</th>
-              <th>Attendee Email</th>
-              <th>Amount</th>
-              <th>Request to Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              // Render skeleton rows if loading
-              [...Array(5)].map((_, index) => (
-                <tr key={index}>
-                  <td>
-                    <Skeleton circle={true} height={64} width={64} />
-                  </td>
-                  <td>
-                    <Skeleton width={150} />
-                  </td>
-                  <td>
-                    <Skeleton width={100} />
-                  </td>
-                  <td>
-                    <Skeleton width={120} />
-                  </td>
-                  <td>
-                    <Skeleton width={180} />
-                  </td>
-                  <td>
-                    <Skeleton width={50} />
-                  </td>
-                  <td>
-                    <Skeleton width={100} />
-                  </td>
-                </tr>
-              ))
-            ) : (
-              bookingsData?.bookings?.map((booking: UserBooking) => {
+      {isLoading ? (
+        <div className="mb-4">
+          {/* Loading skeleton outside of table */}
+          <Skeleton height={64} width={`100%`} count={5} />
+        </div>
+      ) : bookingsData?.bookings?.length === 0 ? (
+        // Display message when no bookings are found, outside the table
+        <p className="text-center text-lg text-gray-500">No bookings found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="table w-full">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Event Title</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Attendee Email</th>
+                <th>Amount</th>
+                <th>Request to Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookingsData?.bookings?.map((booking: UserBooking) => {
                 const { eventId: { image, title, date, location }, attendeEmail, amount, requestToDelete, _id } = booking;
 
                 return (
                   <tr key={_id}>
- 
                     <td>
                       <img
                         src={image}
@@ -101,17 +80,11 @@ const MyBookings: React.FC = () => {
                         className="w-16 h-16 object-cover rounded"
                       />
                     </td>
- 
                     <td>{title}</td>
- 
                     <td>{new Date(date).toLocaleDateString()}</td>
- 
                     <td>{location}</td>
- 
                     <td>{attendeEmail}</td>
- 
                     <td>${amount}</td>
- 
                     <td className="text-center">
                       <button
                         className={`btn ${requestToDelete ? 'btn-disabled' : 'btn-error'} btn-sm flex items-center`}
@@ -126,11 +99,11 @@ const MyBookings: React.FC = () => {
                     </td>
                   </tr>
                 );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
