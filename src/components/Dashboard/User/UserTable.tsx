@@ -145,6 +145,7 @@ function UsersTable() {
               onChange={(e) => {
                 setSearchQuery(e.target.value)
                 setSearchLoading(true)
+                setPage(1)
               }}
             />
           </div>
