@@ -4,11 +4,12 @@ import { Link, useLocation } from 'react-router-dom';
 import UserProfile from '../Profile/UserProfile';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
+import { useGetSettingsQuery } from '../../features/settings/settingsApi';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const getUser = useSelector((state: RootState)=>state.auth);
-  console.log(getUser);  
+  const { data: settingsData} = useGetSettingsQuery();  
   
   const isActive = (path: string) => {
     return location.pathname === path ? 'border-opacity-100 text-[#506aff]' : 'border-opacity-0';
@@ -23,30 +24,13 @@ const Navbar: React.FC = () => {
       <header className="header sticky top-0 bg-white shadow-md flex items-center justify-between px-8 py-2 z-10">
         <div className="w-3/12 flex items-center">
           <Link to="/" className="flex items-center">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-[#3F51B5]"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" />
-              <path
-                d="M2 17l10 5 10-5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2 12l10 5 10-5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <img
+              src={settingsData?.siteLogo}   
+              alt="Logo"
+              className="w-12 h-12 object-contain"
+            />
             <span className="ml-2 text-xl font-bold text-black duration-200">
-              EventVerse
+              {settingsData?.siteName}
             </span>
           </Link>
         </div>
