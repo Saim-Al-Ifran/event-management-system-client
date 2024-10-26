@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useGetSettingsQuery } from '../../features/settings/settingsApi';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -8,17 +9,24 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
-
+  const { data: settingsData} = useGetSettingsQuery();  
   const toggleSection = (section: string) => {
     setActiveSection(prevSection => (prevSection === section ? null : section));
   };
-
+  
   return (
     <div
       className={`fixed inset-y-0 left-0 z-30 transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } overflow-y-auto bg-[#1F2937] text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 w-64`}
     >
+            <div className="flex items-center justify-center p-4">
+        <img
+          src={settingsData?.siteLogo}   
+          alt="Logo"
+          className="w-20 h-20 object-contain"  // Adjust size as needed
+        />
+      </div>
       {/* Sidebar Header */}
       <div className="flex items-center justify-between p-4 lg:hidden">
         <h2 className="text-2xl font-bold">Dashboard</h2>
