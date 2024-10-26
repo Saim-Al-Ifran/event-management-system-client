@@ -37,7 +37,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ toggleSidebar }) => {
 
       {/* Main content */}
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">Admin panel</a>
+        <a className="btn btn-ghost text-xl">Event Verse</a>
       </div>
 
       {/* Right side controls */}
