@@ -162,6 +162,7 @@ const ProfileForm: React.FC = () => {
             type="submit"
             className="px-4 py-2 bg-[#3F51B5] text-white rounded-md"
             {...(undefined as any)}
+            disabled={isBlocked}
           >
             Update Profile
           </Button>
