@@ -10,6 +10,7 @@ import { RootState } from '../../app/store';
 import PaymentModal from '../../components/Checkout/PaymentModal';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { useGetUserProfileQuery } from '../../features/user/userApi';
 const stripePromise = loadStripe(import.meta.env.VITE_Payment_Gateway_PK);
 
 const formatDateParts = (dateString: string) => {
@@ -23,11 +24,13 @@ const formatDateParts = (dateString: string) => {
 const EventDetailsPage: React.FC = () => {
   const { id } = useParams<string>();
   const { data: event, isLoading, error } = useGetSingleEventQuery(id);
+  const {data:userData} = useGetUserProfileQuery();
   const getUser = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const navigateLocation = useLocation();
   const [openModal, setOpenModal] = useState(false);
-   
+  const isBlocked = userData?.profile?.isBlocked;
+  
   
   
   if (isLoading) {
@@ -156,7 +159,7 @@ const EventDetailsPage: React.FC = () => {
                   size="lg" 
                   {...(undefined as any)}
                   onClick={handleClick}
-                  disabled={status !== 'active'}
+                  disabled={status !== 'active' || isBlocked}
                >
                 Book Tickets
               </Button>
