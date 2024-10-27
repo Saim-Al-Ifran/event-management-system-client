@@ -18,7 +18,7 @@ const ProfileForm: React.FC = () => {
   const [updateUserProfile, { isLoading: updateUserLoading, isSuccess: isUserSuccess, error }] = useUpdateUserProfileMutation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>('');
-
+  const isBlocked = userData?.profile?.isBlocked;
   useEffect(() => {
     if (isUserSuccess) {
       toast.success("Updated profile successfully");
@@ -102,7 +102,12 @@ const ProfileForm: React.FC = () => {
           alt="Profile"
           className="w-32 h-32 rounded-full object-cover mb-4"
         />
-        <Button size='sm' onClick={toggleModal}  {...(undefined as any)}>
+        <Button
+           size='sm'
+           onClick={toggleModal} 
+           {...(undefined as any)}
+           disabled={isBlocked}
+        >
           Change Image
         </Button>
       </div>
