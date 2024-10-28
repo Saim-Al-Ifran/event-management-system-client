@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Button } from '@material-tailwind/react';
 import toast from 'react-hot-toast';
-import { useChangePasswordMutation } from '../../features/user/userApi';
+import { useChangePasswordMutation, useGetUserProfileQuery } from '../../features/user/userApi';
  
 
 const ChangePasswordForm: React.FC = () => {
@@ -12,6 +12,8 @@ const ChangePasswordForm: React.FC = () => {
   });
 
  const [changePassword, { isLoading, isSuccess, error }] = useChangePasswordMutation();
+ const { data: userData } = useGetUserProfileQuery();
+ const isBlocked = userData?.profile?.isBlocked;
 
   useEffect(() => {
     if (isSuccess) {
@@ -112,6 +114,7 @@ const ChangePasswordForm: React.FC = () => {
             type="submit"
             className="px-4 py-2 bg-[#3F51B5] text-white rounded-md"
             {...(undefined as any)}
+            disabled={isBlocked}
           >
             Change Password
           </Button>
