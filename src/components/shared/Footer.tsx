@@ -1,8 +1,14 @@
 import React from 'react';
 import { Typography } from '@material-tailwind/react';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { useGetSettingsQuery } from '../../features/settings/settingsApi';
 
 const Footer: React.FC = () => {
+  const {data} = useGetSettingsQuery();
+ 
+  const facebookLink = data?.socialLinks?.facebook;   
+  const twitterLink = data?.socialLinks?.twitter;   
+  const instagramLink = data?.socialLinks?.instagram;   
   return (
     <footer className="bg-[#3F51B5] text-white py-10">
       <div className="container px-4 mx-auto">
@@ -65,17 +71,15 @@ const Footer: React.FC = () => {
             </Typography>
             <ul>
               <li className="mb-2">
-                <a href="#" className="hover:underline">Facebook</a>
+                <a href={facebookLink} className="hover:underline">Facebook</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="hover:underline">Twitter</a>
+                <a href={twitterLink} className="hover:underline">Twitter</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="hover:underline">Instagram</a>
+                <a href={instagramLink} className="hover:underline">Instagram</a>
               </li>
-              <li className="mb-2">
-                <a href="#" className="hover:underline">LinkedIn</a>
-              </li>
+
             </ul>
           </div>
           <div>
