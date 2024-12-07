@@ -44,7 +44,7 @@ const EditEvent: React.FC = () => {
       setDate(new Date(event.date));
       setLocation(event.location);
       setCapacity(event.capacity);
-      setCategory(event.category);
+      setCategory(event.category._id);
       setPrice(event.price);
       setDescription(event.description);
       setImagePreview(event.image);  
@@ -78,7 +78,18 @@ const EditEvent: React.FC = () => {
       toast.error('Please fill out all fields.');
       return;
     }
+    console.log({
+      title,
+      date,
+      location,
+      capacity,
+      category,
+      status,
+      price,
+      description,
 
+    });
+    
     const formData = new FormData();
     formData.append('title', title);
     if (date) formData.append('date', date.toISOString());
@@ -99,7 +110,7 @@ const EditEvent: React.FC = () => {
       console.error('Failed to update event', err);
     }
   };
-
+ 
   return (
     <>
       <Navbar className="bg-[#607D8B] p-4" {...(undefined as any)}>
