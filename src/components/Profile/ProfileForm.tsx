@@ -101,6 +101,7 @@ const ProfileForm: React.FC = () => {
           src={profileData.image ? profileData.image : avatar}
           alt="Profile"
           className="w-32 h-32 rounded-full object-cover mb-4"
+          referrerPolicy="no-referrer"
         />
         <Button
            size='sm'

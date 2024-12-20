@@ -37,7 +37,7 @@ const UserProfile: React.FC = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-              <img alt="User avatar" src={image} />
+              <img alt="User avatar" src={image}  referrerPolicy="no-referrer"/>
             </div>
           </div>
           <ul

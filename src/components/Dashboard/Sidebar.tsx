@@ -58,10 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
         <NavLink
           to="/dashboard"
           end
-          className={({ isActive }) =>
-            `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${
-              isActive ? 'bg-[#256caa] text-white' : ''
-            }`
+          className={({ isActive }) => `flex items-center p-2 space-x-3 rounded-md hover:bg-[#256caa] hover:text-white ${ isActive ? 'bg-[#256caa] text-white' : ''}`
           }
         >
           <i className="fa-solid fa-house"></i>
